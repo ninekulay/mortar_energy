@@ -1,0 +1,171 @@
+@import "./colors";
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+  font-family: 'Kanit', sans-serif;
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+p,a,h1,h2,h3,h4,h5,h6 {
+  padding: 0;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+  letter-spacing: 2px;
+  line-height: 120%;
+}
+
+h1 {
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+h3 {
+  font-size: 28px;
+}
+
+h4 {
+  font-size: 24px;
+  line-height: 160%;
+}
+
+h5 {
+  font-size: 20px;
+  line-height: 160%;
+}
+
+h6 {
+  font-size: 16px;
+  line-height: 160%;
+}
+
+.typography {
+  // Medium
+  &-t1, &-t2, &-t3 {
+    font-weight: 400;
+    line-height: 160%;
+  }
+
+  &-t1 {
+    font-size: 24px;
+  }
+
+  &-t2 {
+    font-size: 20px;
+  }
+
+  &-t3 {
+    font-size: 16px;
+  }
+
+  // Regular
+  &-b1, &-b2, &-b3, &-b4 {
+    font-weight: 300;
+    line-height: 160%;
+  }
+
+  &-b1 {
+    font-size: 24px;
+  }
+
+  &-b2 {
+    font-size: 20px;
+  }
+
+  &-b3 {
+    font-size: 16px;
+  }
+
+  &-b4 {
+    font-size: 12px;
+    line-height: 140%;
+  }
+  &-b5 {
+    font-size: 8px;
+    line-height: 140%;
+  }
+}
+
+.text {
+  &-ellipsis {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.none {
+  display: none;
+}
+.block {
+  display: block;
+}
+.flex {
+  display: flex;
+}
+.inline-flex {
+  display: inline-flex;
+}
+.grid {
+  @for $i from 1 through 20 {
+    &.tc-#{$i} {
+      grid-template-columns: repeat($i, 1fr); /* One columns with equal width */
+    }
+  }
+}
+.column {
+  flex-direction: column;
+}
+.row {
+  flex-direction: row;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+.nowrap {
+  flex-wrap: nowrap;
+}
+.items {
+  &-start {
+    align-items: start;
+  }
+  &-center {
+    align-items: center;
+  }
+  &-end {
+    align-items: end;
+  }
+  &-baseline {
+    align-items: baseline;
+  }
+}
+.start {
+  justify-content: start;
+}
+.center {
+  justify-content: center;
+}
+.end {
+  justify-content: end;
+}
+.space-around {
+  justify-content: space-around;
+}
+.space-between {
+  justify-content: space-between;
+}
+.space-evenly {
+  justify-content: space-evenly;
+}

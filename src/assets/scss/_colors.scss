@@ -1,0 +1,97 @@
+// Define color variables
+$colors: (
+        'primary': #0070F2,
+        'black': #000,
+        'white': #fff,
+  // ... all your Dark Theme colors
+        'black-2': #C2C8CE,
+        'black-5': #353B40,
+        'black-6': #242a2d,
+// ... all your gray colors
+        'gray-1': #F5F6F7,
+        'gray-2': #EAECEE,
+        'gray-3': #D5DADD,
+        'gray-4': #A9B4BE,
+        'gray-5': #8396A8,
+        'gray-6': #5B738B,
+        'gray-7': #475E75,
+        'gray-8': #354A5F,
+        'gray-9': #223548,
+        'gray-10': #1A2733,
+        'gray-11': #12171C,
+  // ... all your blue colors
+        'blue-1': #E3F2FD,
+        'blue-2': #BBDEFB,
+        'blue-3': #90CAF9,
+        'blue-4': #64B5F6,
+        'blue-5': #42A5F5,
+        'blue-6': #2196F3,
+        'blue-7': #1E88E5,
+        'blue-8': #1976D2,
+        'blue-9': #1565C0,
+        'blue-10': #0D47A1,
+        'blue-11': #08306B,
+  // ... all your red colors
+        'red-1': #FFEAEB,
+        'red-2': #FFD5EA,
+        'red-3': #FFB2D2,
+        'red-4': #FF8CB2,
+        'red-5': #FF5C77,
+        'red-6': #EE3939,
+        'red-7': #D20A0A,
+        'red-8': #AA0808,
+        'red-9': #840606,
+        'red-10': #5A0404,
+        'red-11': #350000,
+  // ... all your red colors
+        'green-1': #F5FAE5,
+        'green-2': #EBF5CB,
+        'green-3': #BDE986,
+        'green-4': #97DD40,
+        'green-5': #5DC122,
+        'green-6': #36A41D,
+        'green-7': #188918,
+        'green-8': #256F3A,
+        'green-9': #1E592F,
+        'green-10': #164323,
+        'green-11': #0E2B16,
+);
+
+
+// Generate CSS variables
+:root {
+  @each $name, $color in $colors {
+    --color-#{$name}: #{$color};
+  }
+}
+
+// Generate background color classes
+@each $name, $color in $colors {
+  .color-#{$name} {
+    background: $color;
+  }
+}
+
+// Generate text color classes
+@each $name, $color in $colors {
+  .text-color-#{$name} {
+    color: $color;
+
+    // Hover styles
+    &:hover {
+      color: $color;
+    }
+  }
+}
+
+// Generate border color classes (assuming you have a border property in your styles)
+@each $name, $color in $colors {
+  .border-color-#{$name} {
+    border-color: $color;
+
+    // Hover styles
+    &:hover {
+      border-color: $color;
+    }
+  }
+}
