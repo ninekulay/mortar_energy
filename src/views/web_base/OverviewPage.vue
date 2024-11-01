@@ -6,8 +6,8 @@
       </template>
       <template #content>
           <div class="flex flex-col justify-center overscroll-x-auto"></div>
-          <div class="flex justify-center gap-4 w-full min-h-60 px-4 sm:flex-col lg:flex-row" :style="`${userScreenType === 'tablet' ? 'height: fit-content' : 'height: calc(100vh - 15vh);'} overflow-y: scroll;`">
-            <div class="sm:w-full lg:w-1/2 flex flex-col h-full relative bg-white my-2 shadow-xl rounded-xl border border-gray-100">
+          <div class="flex justify-center gap-4 w-full min-h-60 px-4 sm:flex-col lg:flex-row" :style="`${userScreenType === 'tablet' ? 'height: fit-content;' : 'height: calc(100vh - 15vh);'}`">
+            <div class="sm:w-full lg:w-1/2 flex flex-col h-full relative bg-white my-2 shadow-xl rounded-xl border border-gray-100" :style="`${userScreenType !== 'tablet' ? 'min-height: 710px;': ''}`">
               <div class="h-full relative flex items-center justify-center">
                 <!-- Image Container -->
                 <div class="relative" :style="userScreenType === 'tablet' ? 'max-width: 500px; max-height: 500px;' : ''">
@@ -25,7 +25,6 @@
                 </div>
               </div>
 
-              
               <div class="bg-gray-300 min-h-20 p-4 rounded-md flex flex-col gap-2 absolute shadow-lg top-60" v-if="displayCard.position1">
                 <div class="flex justify-between gap-4 items-center">
                   <div class="flex justify-start gap-4 items-center">
@@ -59,7 +58,7 @@
               </div>
             </div>
             <div class="sm:w-full lg:w-1/2 flex flex-col h-full gap-4 my-2">
-              <div class="w-full min-h-20 bg-white flex flex-col shadow-xl rounded-xl border border-gray-100" style="height: calc(100%);">
+              <div class="w-full min-h-20 bg-white flex flex-col shadow-xl rounded-xl border border-gray-100" style="height: calc(100%); min-height: 230px;">
                 <div class=" w-full flex justify-start items-center gap-2">
                   <h2 class="font-semibold bg-gray-300  px-2 py-1 mt-2 ml-2 rounded-md">OEE</h2>
                   <label class="text-gray-500 py-2 mt-2 text-sm">(08.00 - 07.59)</label>
@@ -164,7 +163,7 @@
                   </div>
                 </div>
               </div>
-              <div class="w-full min-h-20 bg-white flex flex-col shadow-xl rounded-xl border border-gray-100 gap-4" style="height: calc(75%);">
+              <div class="w-full min-h-20 bg-white flex flex-col shadow-xl rounded-xl border border-gray-100 gap-4" style="height: calc(75%); min-height: 230px;">
                 <div class="w-full flex justify-start items-center gap-2">
                   <h2 class="font-semibold px-2 py-2 bg-gray-300 mt-2 ml-2 rounded-md">Utilization</h2>
                   <label class="text-gray-500 py-2 mt-2 text-sm">(08.00 - 07.59)</label>
@@ -173,7 +172,7 @@
                     <d-chart-donut :data-source="dataSource.utilizationValue" style="height: 150px;"/>
                 </div>
               </div>
-              <div class="w-full min-h-20 bg-white shadow-xl rounded-xl border border-gray-100" style="height: calc(75%);">
+              <div class="w-full min-h-20 bg-white shadow-xl rounded-xl border border-gray-100" style="height: calc(75%); min-height: 220px;">
                 <div class="w-full flex justify-start items-center gap-2">
                   <h2 class="font-semibold px-2 py-2 bg-gray-300 mt-2 ml-2 rounded-md">Timeline</h2>
                   <label class="text-gray-500 py-2 mt-2 text-sm">(08.00 - 07.59)</label>
