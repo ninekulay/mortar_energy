@@ -1,0 +1,167 @@
+image: docker:19
+
+services:
+  - docker:dind
+
+stages:
+  - build_dev
+  - check_port_dev
+  - deploy_dev
+  - build_prod
+  - check_port_prod
+  - deploy_prod
+
+variables:
+  IMAGE_NAME: my-vue-app
+  CONTAINER_NAME: my-vue-app
+  HOST_PORT: 8080
+  INSIDE_PORT : 8080
+  ENV_FILE: .env.production  # Define the environment file
+
+build_dev:
+  stage: build_dev
+  image: node:18
+  tags:
+    - oee_apps_dev
+  when: manual
+  script:
+    - echo "VUE_APP_URL_BACKEND=$IP_API_BACK_DEV" >> $ENV_FILE
+    - echo "VUE_APP_SERVICE_AUTH_PASSWORD=$CI_SERVICE_AUTH_PASSWORD" >> $ENV_FILE
+    - echo "VUE_APP_SERVICE_AUTH_USER=$CI_SERVICE_AUTH_USER" >> $ENV_FILE
+    - echo "VUE_APP_SECRET_FRONT=$CI_VUE_APP_SECRET_FRONT" >> $ENV_FILE
+    - echo "VUE_APP_REGISTER_PASSWORD=$CI_VUE_APP_REGISTER_PASSWORD" >> $ENV_FILE
+    - echo "PATH='${PATH}'"
+    - npm install --force
+    - npm run build
+    - npm list tailwindcss
+  artifacts:
+    paths:
+      - dist/
+      - $ENV_FILE
+
+check_port_dev:
+  stage: check_port_dev
+  tags:
+    - oee_apps_dev
+  needs:
+    - build_dev
+  script:
+    - |
+      PORT=8080
+      CONTAINER_ID=$(docker ps -qf "expose=$PORT")
+      if [ -n "$CONTAINER_ID" ]; then
+        echo "Container is already running on port $PORT. Stopping and removing it..."
+        docker stop $CONTAINER_ID
+        docker rm $CONTAINER_ID
+      else
+        echo "No container is running on port $PORT."
+      fi
+
+before_script:
+  - export NVM_DIR="/home/ubuntu/.nvm"
+  - |
+    if [ -s "$NVM_DIR/nvm.sh" ]; then
+      \. "$NVM_DIR/nvm.sh"  # Load NVM
+    fi
+  - nvm use 18.17.1  # Use the specific version
+  - node --version
+  - npm --version
+
+deploy_to_dev:
+  stage: deploy_dev
+  script:
+    - echo "Deploying to dev server"
+  only:
+    - backend-dev
+  tags:
+    - oee_apps_dev
+  needs:
+    - build_dev
+  when: manual
+  script:
+    - docker image ls
+    - |
+      CONTAINER_ID=$(docker ps -aqf "name=$CONTAINER_NAME")
+      if [ -n "$CONTAINER_ID" ]; then
+        echo "Container is already running. Stopping and removing it..."
+        docker stop $CONTAINER_ID
+        docker rm $CONTAINER_ID  # Remove the old container
+      fi
+    - docker build --no-cache -t $IMAGE_NAME .
+    - docker run --restart always -d -p $HOST_PORT:$INSIDE_PORT --name $CONTAINER_NAME --env-file $ENV_FILE $IMAGE_NAME
+
+
+before_script:
+  - export NVM_DIR="/home/ubuntu/.nvm"
+  - |
+    if [ -s "$NVM_DIR/nvm.sh" ]; then
+      \. "$NVM_DIR/nvm.sh"  # Load NVM
+    fi
+  - nvm use 18.17.1  # Use the specific version
+  - node --version
+  - npm --version
+
+build_prod:
+  stage: build_prod
+  image: node:18
+  tags:
+    - oee_apps_prod
+  when: manual
+  script:
+    - echo "VUE_APP_URL_BACKEND=$IP_API_BACK_LA" >> $ENV_FILE
+    - echo "VUE_APP_URL_SERVICE_REPORT=$IP_API_BACK_REPORT" >> $ENV_FILE
+    # - echo "VUE_APP_URL_LAMDA=$IP_LAMDA" >> $ENV_FILE
+    - echo "IP_API_BACK_LA=$IP_API_BACK_LA"
+    - echo "VUE_APP_SERVICE_AUTH_PASSWORD=$CI_SERVICE_AUTH_PASSWORD" >> $ENV_FILE
+    - echo "VUE_APP_SERVICE_AUTH_USER=$CI_SERVICE_AUTH_USER" >> $ENV_FILE
+    - echo "VUE_APP_SECRET_FRONT=$CI_VUE_APP_SECRET_FRONT" >> $ENV_FILE
+    - echo "VUE_APP_REGISTER_PASSWORD=$CI_VUE_APP_REGISTER_PASSWORD" >> $ENV_FILE
+    - echo "PATH='${PATH}'"
+    - npm install --force
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+      - $ENV_FILE
+
+check_port_prod:
+  stage: check_port_prod
+  tags:
+    - oee_apps_prod
+  needs:
+    - build_prod
+  script:
+    - |
+      PORT=8080
+      CONTAINER_ID=$(docker ps -qf "expose=$PORT")
+      if [ -n "$CONTAINER_ID" ]; then
+        echo "Container is already running on port $PORT. Stopping and removing it..."
+        docker stop $CONTAINER_ID
+        docker rm $CONTAINER_ID
+      else
+        echo "No container is running on port $PORT."
+      fi
+
+deploy_to_prod:
+  stage: deploy_prod
+  script:
+    - echo "Deploying to prod server"
+  # only:
+  #   - main
+  tags:
+    - oee_apps_prod
+  needs:
+    - build_prod
+    - check_port_prod
+  # when: manual
+  script:
+    - docker image ls
+    - |
+      CONTAINER_ID=$(docker ps -aqf "name=$CONTAINER_NAME")
+      if [ -n "$CONTAINER_ID" ]; then
+        echo "Container is already running. Stopping and removing it..."
+        docker stop $CONTAINER_ID
+        docker rm $CONTAINER_ID  # Remove the old container
+      fi
+    - docker build --no-cache -t $IMAGE_NAME .
+    - docker run --restart always -d -p $HOST_PORT:$INSIDE_PORT --name $CONTAINER_NAME --env-file $ENV_FILE $IMAGE_NAME
