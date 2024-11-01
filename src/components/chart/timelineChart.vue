@@ -38,7 +38,41 @@ export default {
     const gaugeOptions = reactive({
       chart: {
         type: 'xrange',
-        width: props?.width || null
+        width: props?.width || null,
+        borderRadius: 8,
+        spacing: [0, 0, 0, 0],
+        zoomType: 'x',
+        panning: {
+          enabled: true,
+          type: 'x',
+        },
+        resetZoomButton: {
+          position: {
+            align: 'right',
+            verticalAlign: 'top',
+            x: -10,
+            y: 10,
+          },
+          useHTML: true, 
+          theme: {
+            // Using Tailwind CSS colors
+            fill: '#58c3fb', // equivalent to '#f7f7f7' in Tailwind
+            borderRadius: 10,
+            stroke: 'border-gray-300', // equivalent to 'silver'
+            r: 10,
+            style: {
+              color: 'white', // equivalent to '#333'
+            },
+            states: {
+              hover: {
+                fill: '#1da5ec', // equivalent to '#e6e6e6'
+                // style: {
+                //   color: 'text-gray-800', // equivalent to '#333'
+                // },
+              },
+            },
+          },
+        },
       },
       title: {
         text: props.dataSource.name,
