@@ -1,6 +1,6 @@
 <script>
-import { logoQonnectWhite, logoQonnectWhiteFull, logoQonnectWhiteFullSvg } from '@/assets/helper/assets'
-import { reactive, ref } from 'vue'
+import { logoQonnectWhite, logoQonnectWhiteFull, logoQonnectWhiteFullSvg, logoQonnectBlack, logoAjinomoto } from '@/assets/helper/assets'
+import { reactive, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { routeTo } from '@/utils/helper'
 import {
@@ -12,7 +12,7 @@ import {
   folderIcon, folderIconBlue, cloudIcon, cloudIconBlue, logoutIcon, televisionIcon,
   documentCheckIcon, documentCheckIconBlue, documentMinusIcon, documentMinusIconBlue,
   documentUpIcon, documentUpIconBlue, documentDownIcon, documentDownIconBlue, doubleRightIcon, doubleLeftIcon,
-  toolsIconWhite, toolsIconBlue
+  toolsIconWhite, toolsIconBlue, clipboardDataIconWhite, clipboardDataIconBlue
 } from '@/utils/helper-asset-icon.ts'
 
 export default {
@@ -62,19 +62,27 @@ export default {
       documentDownIcon,
       documentDownIconBlue,
       toolsIconWhite,
-      toolsIconBlue
+      toolsIconBlue,
+      clipboardDataIconWhite,
+      clipboardDataIconBlue
     }
     const isTelevisionMode = ref(false)
 
     const route = useRoute()
     const menu = reactive([
-      { title: 'Overview', label: 'Overview', link: 'Select-machine-visualization', icon: 'pieIcon', iconActive: 'pieIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'Settings', label: 'Settings', link: 'Select-machine-visualization', icon: 'toolsIconWhite', iconActive: 'toolsIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Overview', label: 'Overview', link: 'home', icon: 'pieIcon', iconActive: 'pieIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'History', label: 'History', link: 'History', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Plan', label: 'Plan', link: 'UploadPlan', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Reject', label: 'Reject', link: 'RejectLogs', icon: 'documentMinusIcon', iconActive: 'documentMinusIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Settings', label: 'Settings', link: 'UserSetting', icon: 'toolsIconWhite', iconActive: 'toolsIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
 
     ])
     const menuMinimize = reactive([
-      { title: 'Overview', label: 'Machine Overview', link: 'Select-machine-visualization', icon: 'pieIcon', iconActive: 'pieIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'Settings', label: 'Settings', link: 'Select-machine-visualization', icon: 'toolsIconWhite', iconActive: 'toolsIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Overview', label: 'Machine Overview', link: 'home', icon: 'pieIcon', iconActive: 'pieIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'History', label: 'History', link: 'History', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Plan', label: 'Plan', link: 'UploadPlan', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Reject', label: 'Reject', link: 'RejectLogs', icon: 'documentMinusIcon', iconActive: 'documentMinusIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Settings', label: 'Settings', link: 'UserSetting', icon: 'toolsIconWhite', iconActive: 'toolsIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
     ])
 
     const onCollapsed = () => {
@@ -122,13 +130,20 @@ export default {
       sessionStorage.removeItem('userToken')
       routeTo('login')
     }
+
+    const classBindingCollapsed = computed(() => {
+      console.log('props.isCollapsed', props.isCollapsed)
+      return `${!props.isCollapsed ? 'w-full' : 'w-1/2'}`;
+    });
     return {
       menu,
       menuMinimize,
       route,
       logoQonnectWhite,
+      logoQonnectBlack,
       logoQonnectWhiteFull,
       logoQonnectWhiteFullSvg,
+      logoAjinomoto,
       onCollapsed,
       handleTvMode,
       onItem,
@@ -140,6 +155,7 @@ export default {
       logoutIcon,
       televisionIcon,
       isTelevisionMode,
+      classBindingCollapsed,
     }
   },
   computed: {
@@ -155,10 +171,10 @@ export default {
   },
   mounted () {
     this.OnActive()
-    this.checkScreenSize()
   },
   methods: {
     handleChangePage (name) {
+      console.log('name', name)
       routeTo(name)
     },
     OnActive () {
@@ -166,74 +182,48 @@ export default {
       this.menu = [...this.menu] // Spread operator forces reactivity
       this.menuMinimize = [...this.menuMinimize]
       for (const item of this.menu) {
-        if (Object.prototype.hasOwnProperty.call(item, 'children')) {
-          for (const child of item.children) {
-            if (child.link === this.route.name) {
-              item.active = true
-              child.active = true
-              notFound = false
-            }
-          }
-        } else {
-          if (item.link === this.route.name) {
+        if (item.link === this.route.name) {
             item.active = true
           }
-        }
       }
       for (const item of this.menuMinimize) {
-        if (Object.prototype.hasOwnProperty.call(item, 'children')) {
-          for (const child of item.children) {
-            if (child.link === this.route.name) {
-              item.active = true
-              child.active = true
-              notFound = false
-            }
-          }
-        } else {
-          if (item.link === this.route.name) {
-            item.active = true
-            notFound = false
-          }
+        if (item.link === this.route.name) {
+          item.active = true
+          notFound = false
         }
       }
       if (notFound) {
         switch (this.route.name) {
-          case 'MachineView':
+          case 'home':
             this.menu[0].active = true
             this.menuMinimize[0].active = true
             break
         }
       }
-    },
-    checkScreenSize () {
-      this.screenWidth = window.innerWidth
-      if (this.screenWidth <= 1024) {
-        this.onCollapsed()
-      }
-      if (this.userType === 'tablet') {
-        this.onCollapsed()
-      }
-      // this.devicePixelRatio = window.devicePixelRatio
-      // console.log(this.screenWidth, this.devicePixelRatio)
-      // // Example: Automatically click the button if screen width is less than 1024px
     }
   }
 }
 </script>
 <template lang="html">
   <section>
-    <div class="bg-white h-11 absolute top-0 right-0 flex justify-end align-middle items-center shadow-sm z-0 w-full" :style="{ width: `calc(100vw - ${width}px)`}">
-      <button v-if="isTelevision" class="flex justify-between align-middle items-center text-sky-500 mx-8 text-sm border border-gray-300 rounded-lg px-2 py-1 font-semibold max-lg:hidden" @click="handleTvMode">
-        <img class="h-4" :src="televisionIcon"/>
-        <span class="ml-2 max-lg:text-xxs lg:text-xs xl:text-sm" v-if="!isTelevisionMode">Television Mode</span>
-        <span class="ml-2" v-else>Normal Mode</span>
-      </button>
-      <div v-if="userEmail != ''" class="text-sm bg-sky-500 rounded-full w-5 mr-2 text-white cursor-default" v-show="!isTelevisionMode">C</div>
-      <span class="font-light max-lg:text-xxs lg:text-xs xl:text-sm text-gray-500 cursor-default" v-show="!isTelevisionMode">chanin@scg.com</span>
-      <button class="flex justify-between align-middle items-center text-sky-500 mx-8 text-sm" @click="logout">
-        <img class="h-4" :src="logoutIcon"/>
-        <span class="ml-2 max-lg:text-xxs lg:text-xs xl:text-sm">Logout</span>
-      </button>
+    <div class="bg-white h-11 absolute top-0 right-0 flex justify-between align-middle items-center shadow-sm z-0 w-full" :style="{ width: `calc(100vw - ${width}px)`}">
+      <div class="flex w-1/2 justify-start gap-4 items-center" v-if="isCollapsed">
+        <img class="h-8 ml-8" :src="logoAjinomoto"/>
+        <h2 class="font-semibold">Machine Performance</h2>
+      </div>
+      <div :class="`flex justify-end align-middle items-center ${classBindingCollapsed}`">
+        <button v-if="isTelevision" class="flex justify-between align-middle items-center text-sky-500 mx-8 text-sm border border-gray-300 rounded-lg px-2 py-1 font-semibold max-lg:hidden" @click="handleTvMode">
+          <img class="h-4" :src="televisionIcon"/>
+          <span class="ml-2 max-lg:text-xxs lg:text-xs xl:text-sm" v-if="!isTelevisionMode">Television Mode</span>
+          <span class="ml-2" v-else>Normal Mode</span>
+        </button>
+        <div v-if="userEmail != ''" class="text-sm bg-sky-500 rounded-full w-5 mr-2 text-white cursor-default" v-show="!isTelevisionMode">C</div>
+        <span class="font-light max-lg:text-xxs lg:text-xs xl:text-sm text-gray-500 cursor-default" v-show="!isTelevisionMode">chanin@scg.com</span>
+        <button class="flex justify-between align-middle items-center text-sky-500 mx-8 text-sm" @click="logout">
+          <img class="h-4" :src="logoutIcon"/>
+          <span class="ml-2 max-lg:text-xxs lg:text-xs xl:text-sm">Logout</span>
+        </button>
+      </div>
     </div>
   </section>
   <nav :class="`q-sidebar ${isCollapsed? 'collapsed' : ''} h-full`" :style="`--sidebar-width: ${width}; position: relative`">
@@ -268,9 +258,9 @@ export default {
       </button>
     </section>
 
-    <section :class="`q-sidebar-menu ${isCollapsed ? 'mt-24' : ''}`">
-      <img alt="logo" class="logo ml-5 h-8" :src="logoQonnectWhiteFullSvg" v-show="!isCollapsed"/>
-      <h1 class="text-left text-white font-semibold ml-5 mt-4 text-2xl" v-show="!isCollapsed">Machine Performance</h1>
+    <section :class="`q-sidebar-menu ${isCollapsed ? 'mt-8' : ''}`">
+      <img alt="logo" class="logo ml-5 h-12" :src="logoAjinomoto" v-show="!isCollapsed" style="filter: invert(100%) sepia(100%) brightness(200%);"/>
+      <h1 class="text-left text-white font-semibold ml-5 mt-4 text-xl" v-show="!isCollapsed">Machine Performance</h1>
       <ul class="mt-5 font-semibold" v-show="!isCollapsed">
         <li v-for="(item, index) in filteredMenuNonTablet" :key="index"
             :class="[

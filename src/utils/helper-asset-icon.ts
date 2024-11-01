@@ -86,5 +86,7 @@ export const uploadIconBlack = require('@/assets/icons/uploadIcon-black.svg')
 export const documentIconBlue = require('@/assets/icons/documentIcon-blue.svg')
 export const toolsIconWhite = require('@/assets/icons/toolsIcon-white.svg')
 export const toolsIconBlue = require('@/assets/icons/toolsIcon-blue.svg')
+export const clipboardDataIconWhite = require('@/assets/icons/clipboardDataIcon-white.svg')
+export const clipboardDataIconBlue = require('@/assets/icons/clipboardDataIcon-blue.svg')
 
 export const robotPalletIcon = require('@/assets/image/robot-pallet.png')
