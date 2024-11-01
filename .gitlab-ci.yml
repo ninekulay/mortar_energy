@@ -59,13 +59,14 @@ check_port_dev:
 
 before_script:
   - export NVM_DIR="$HOME/.nvm"
-  - [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Load NVM
-  - nvm install 18.17.1  # Ensure the specific Node version is installed
-  - nvm use 18.17.1  # Use the specific Node version
+  - |
+    if [ -s "$NVM_DIR/nvm.sh" ]; then
+      \. "$NVM_DIR/nvm.sh"  # Load NVM
+    fi
+  - nvm install 18.17.1
+  - nvm use 18.17.1
   - node --version
   - npm --version
-
-
 
 deploy_to_dev:
   stage: deploy_dev
