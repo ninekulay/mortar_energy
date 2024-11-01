@@ -58,19 +58,13 @@ check_port_dev:
       fi
 
 before_script:
-  - export NVM_DIR="/home/ubuntu/.nvm"
-  - |
-    if [ -s "$NVM_DIR/nvm.sh" ]; then
-      echo "Loading NVM..."
-      \. "$NVM_DIR/nvm.sh"
-    else
-      echo "Error: NVM not found in $NVM_DIR"
-      exit 1
-    fi
-  - nvm install 18.17.1  # Ensures Node 18.17.1 is installed
-  - nvm use 18.17.1  # Activates Node 18.17.1
+  - export NVM_DIR="$HOME/.nvm"
+  - [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Load NVM
+  - nvm install 18.17.1  # Ensure the specific Node version is installed
+  - nvm use 18.17.1  # Use the specific Node version
   - node --version
   - npm --version
+
 
 
 deploy_to_dev:
