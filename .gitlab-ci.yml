@@ -95,12 +95,15 @@ deploy_to_dev:
 
 
 before_script:
-  - export NVM_DIR="/home/ubuntu/.nvm"
+  - echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
+  - echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+  - source ~/.bashrc  # For Bash
   - |
     if [ -s "$NVM_DIR/nvm.sh" ]; then
       \. "$NVM_DIR/nvm.sh"  # Load NVM
     fi
-  - nvm use 18.17.1  # Use the specific version
+  - nvm install 18.17.1
+  - nvm use 18.17.1
   - node --version
   - npm --version
 
