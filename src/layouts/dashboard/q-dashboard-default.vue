@@ -10,15 +10,38 @@ export default {
       type: Boolean,
       default: true
     }
-  }
+  },
+  data() {
+    return {
+      headerHeight: '100%'
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.updateHeaderHeight();
+    }, 300);
+    window.addEventListener('resize', this.updateHeaderHeight);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateHeaderHeight);
+  },
+  methods: {
+    updateHeaderHeight() {
+      const contentHeight = document.querySelector('.q-dashboard-content').scrollHeight;
+      const viewportHeight = window.innerHeight;
+      this.headerHeight = contentHeight > viewportHeight ? contentHeight : 'auto';
+      this.headerHeight = this.headerHeight + 100 + 'px';
+      console.log('headerHeight', this.headerHeight);
+    },
+  },
 }
 </script>
 <template lang="html">
 <main class="q-dashboard" :style="`--sider-width: ${width}`" :class="`${ showSider ? 'show-sider' : 'hide-sider'}`">
-  <aside class="q-dashboard-sider h-screen" v-if="showSider">
+  <aside class="q-dashboard-sider h-full" v-if="showSider"  :style="`height: ${headerHeight};`">
     <slot name="sider"></slot>
   </aside>
-  <section class="q-dashboard-header mt-2" style="overflow-y: scroll;">
+  <section class="q-dashboard-header mb-2" style="overflow-y: scroll; max-height: 50px;">
     <slot name="header"></slot>
   </section>
   <!-- <section class="q-dashboard-content" style="overflow-y: scroll;"> -->
@@ -34,7 +57,7 @@ export default {
 .q-dashboard {
   $sider-width: calc(var(--sider-width) * 1px);
   display: grid;
-  grid-template-rows: auto;
+  grid-template-rows: 50px auto auto auto;
   padding: 0;
   margin: 0;
   grid-template-areas:
@@ -73,7 +96,6 @@ export default {
   }
   .q-dashboard-content {
     grid-area: content;
-    margin-top: 50px;
     // margin: 10px;
     // max-width: calc(100% - $sider-width);
   }
