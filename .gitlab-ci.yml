@@ -61,11 +61,17 @@ before_script:
   - export NVM_DIR="/home/ubuntu/.nvm"
   - |
     if [ -s "$NVM_DIR/nvm.sh" ]; then
-      \. "$NVM_DIR/nvm.sh"  # Load NVM
+      echo "Loading NVM..."
+      \. "$NVM_DIR/nvm.sh"
+    else
+      echo "Error: NVM not found in $NVM_DIR"
+      exit 1
     fi
-  - nvm use 18.17.1  # Use the specific version
+  - nvm install 18.17.1  # Ensures Node 18.17.1 is installed
+  - nvm use 18.17.1  # Activates Node 18.17.1
   - node --version
   - npm --version
+
 
 deploy_to_dev:
   stage: deploy_dev
