@@ -15,12 +15,12 @@
                   
                   <!-- Button 1 - positioned relative to image -->
                   <button class="absolute" style="top: 42%; left: 2%;" @click="changeStateCard('position1')">
-                    <img :src="iconSearch" class="object-cover" alt="search"/>
+                    <img :src="iconInfoCircle" class="object-cover" alt="search"/>
                   </button>
 
                   <!-- Button 2 - positioned relative to image -->
                   <button class="absolute" style="top: 15%; right: 2%;" @click="changeStateCard('position2')">
-                    <img :src="iconSearch" class="object-cover" alt="search"/>
+                    <img :src="iconInfoCircle" class="object-cover" alt="search"/>
                   </button>
                 </div>
               </div>
@@ -69,7 +69,7 @@
                     <label 
                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); width: 100px;" 
                         class="text-black text-xl font-normal">
-                        <span class="text-gray-500 sm:text-xs lg:text-md">99.99%</span>
+                        <span class="text-gray-500 sm:text-xs lg:text-md">{{ dataSource.oeeValue.data[0].y.toFixed(2) }}%</span>
                     </label>
                     <label class="font-semibold sm:text-sm lg:text-md">
                       Overall
@@ -80,7 +80,7 @@
                     <label 
                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); width: 100px;" 
                         class="text-black text-xl font-normal">
-                        <span class="text-gray-500 sm:text-xs lg:text-md">99.99%</span>
+                        <span class="text-gray-500 sm:text-xs lg:text-md">{{ dataSource.aValue.data[0].y.toFixed(2) }}%</span>
                     </label>
                     <label class="font-semibold sm:text-sm lg:text-md">
                       Avaliability
@@ -91,7 +91,7 @@
                     <label 
                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); width: 100px;" 
                         class="text-black text-xl font-normal">
-                        <span class="text-gray-500 sm:text-xs lg:text-md">99.99%</span>
+                        <span class="text-gray-500 sm:text-xs lg:text-md">{{ dataSource.pValue.data[0].y.toFixed(2) }}%</span>
                     </label>
                     <label class="font-semibold sm:text-sm lg:text-md">
                       Performance
@@ -102,7 +102,7 @@
                     <label 
                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); width: 100px;" 
                         class="text-black text-xl font-normal">
-                        <span class="text-gray-500 sm:text-xs lg:text-md">99.99%</span>
+                        <span class="text-gray-500 sm:text-xs lg:text-md">{{ dataSource.qValue.data[0].y >= 100 ? 100 : dataSource.qValue.data[0].y.toFixed(2) }}%</span>
                     </label>
                     <label class="font-semibold sm:text-sm lg:text-md">
                       Quality
@@ -192,8 +192,10 @@
 import QDashboard from '@/layouts/dashboard/q-dashboard-default.vue'
 import QSidebar from '@/components/bar/sidebar.vue'
 import { reactive, watch, ref } from 'vue'
-import { iconSearch, robotPalletIcon } from '@/utils/helper-asset-icon.ts'
+import { iconInfoCircle, robotPalletIcon } from '@/utils/helper-asset-icon.ts'
 import { DChartCircleGauge, DChartDonut, DChartTimeline } from '@/components/export'
+import { getDataFromMachine } from '@/store/machineStatus'
+import { getStatusLogsFromMachine } from '@/store/machineStatusLogs'
 
 export default {
   name: 'OverviewPage',
@@ -231,7 +233,7 @@ export default {
           color: '#0EA5E9',
           radius: '110%',
           innerRadius: '85%',
-          y: 90
+          y: 0
         }]
       },
       aValue: {
@@ -243,7 +245,7 @@ export default {
           color: '#4fb891',
           radius: '110%',
           innerRadius: '85%',
-          y: 90
+          y: 0
         }]
       },
       pValue: {
@@ -255,7 +257,7 @@ export default {
           color: '#f8d363',
           radius: '110%',
           innerRadius: '85%',
-          y: 90
+          y: 0
         }]
       },
       qValue: {
@@ -267,15 +269,15 @@ export default {
           color: '#db8132',
           radius: '110%',
           innerRadius: '85%',
-          y: 90
+          y: 0
         }]
       },
       utilizationValue: {
         name: 'Production',
         data: [
-          { name: 'Uptime', y: 80, color: '#6BE895' },
-          { name: 'Downtime', y: 15, color: '#F27E6E' },
-          { name: 'Idle', y: 5, color: '#FFE178' }
+          { name: 'Uptime', y: 0, color: '#6BE895' },
+          { name: 'Downtime', y: 0, color: '#F27E6E' },
+          { name: 'Idle', y: 0, color: '#FFE178' }
         ],
         unit: 'Production',
         width: 350,
@@ -299,54 +301,54 @@ export default {
       return Date.UTC(year, month - 1, day, hours, minutes, seconds); 
     }
 
-    const generateMockData = () => {
-      let lastValue = ''
-      const data = [];
-      const startDate = new Date(Date.UTC(2024, 9, 19, 2, 0)); // Start from 00:00
-      const endDate = new Date(Date.UTC(2024, 9, 20, 22, 0)); // Up to 22:00
-      const totalEntries = 5; // Total number of data objects
+    // const generateMockData = () => {
+    //   let lastValue = ''
+    //   const data = [];
+    //   const startDate = new Date(Date.UTC(2024, 9, 19, 2, 0)); // Start from 00:00
+    //   const endDate = new Date(Date.UTC(2024, 9, 20, 22, 0)); // Up to 22:00
+    //   const totalEntries = 5; // Total number of data objects
 
-      for (let i = 0; i < totalEntries; i++) {
-        const randomStartHour = Math.floor(Math.random() * 2); // Random hour from 0 to 21
-        const randomStartMinute = Math.floor(Math.random() * 60); // Random minute from 0 to 59
-        const startTime = new Date(startDate);
-        startTime.setHours(randomStartHour);
-        startTime.setMinutes(randomStartMinute);
+    //   for (let i = 0; i < totalEntries; i++) {
+    //     const randomStartHour = Math.floor(Math.random() * 2); // Random hour from 0 to 21
+    //     const randomStartMinute = Math.floor(Math.random() * 60); // Random minute from 0 to 59
+    //     const startTime = new Date(startDate);
+    //     startTime.setHours(randomStartHour);
+    //     startTime.setMinutes(randomStartMinute);
 
-        // Generate a random duration between 30 minutes and 1.5 hours
-        const durationInMinutes = Math.floor(Math.random() * (90 - 30 + 1)) + 30; // Random duration from 30 to 90 minutes
-        const endTime = new Date(startTime);
-        endTime.setMinutes(startTime.getMinutes() + durationInMinutes);
+    //     // Generate a random duration between 30 minutes and 1.5 hours
+    //     const durationInMinutes = Math.floor(Math.random() * (90 - 30 + 1)) + 30; // Random duration from 30 to 90 minutes
+    //     const endTime = new Date(startTime);
+    //     endTime.setMinutes(startTime.getMinutes() + durationInMinutes);
 
-        // Ensure the end time does not exceed 22:00
-        if (endTime > endDate) {
-            continue; // Skip this entry if it exceeds the allowed time
-        }
+    //     // Ensure the end time does not exceed 22:00
+    //     if (endTime > endDate) {
+    //         continue; // Skip this entry if it exceeds the allowed time
+    //     }
 
-        // Determine the color and label based on random choice
-        let isRunning = Math.random() > 0.5; // 50% chance to be "RUNNING" or "STOP"
-        if (lastValue === 'RUNNING') {
-          isRunning = false
-        }
-        const color = isRunning ? '#6BE895' : '#F27E6E';
-        const label = isRunning ? 'RUNNING' : 'STOP';
-        lastValue = label
+    //     // Determine the color and label based on random choice
+    //     let isRunning = Math.random() > 0.5; // 50% chance to be "RUNNING" or "STOP"
+    //     if (lastValue === 'RUNNING') {
+    //       isRunning = false
+    //     }
+    //     const color = isRunning ? '#6BE895' : '#F27E6E';
+    //     const label = isRunning ? 'RUNNING' : 'STOP';
+    //     lastValue = label
 
-        data.push({
-            x: startTime.getTime(), // Start time (timestamp)
-            x2: endTime.getTime(), // Stop time (timestamp)
-            y: 0, // Y-axis category (Status)
-            color: color, // Color for this state
-            label: label // State label
-        });
-      }
+    //     data.push({
+    //         x: startTime.getTime(), // Start time (timestamp)
+    //         x2: endTime.getTime(), // Stop time (timestamp)
+    //         y: 0, // Y-axis category (Status)
+    //         color: color, // Color for this state
+    //         label: label // State label
+    //     });
+    //   }
 
-      return data;
-    }
+    //   return data;
+    // }
 
-    const mockData = generateMockData();
-    console.log('mockData', mockData);
-    dataSource.timelineValue.data = mockData;
+    // const mockData = generateMockData();
+    // console.log('mockData', mockData);
+    // dataSource.timelineValue.data = mockData;
     const checkScreenSize = () => {
       const screenWidth = window.innerWidth // Get the current screen width
 
@@ -392,7 +394,7 @@ export default {
     checkScreenSize()
     return {
       sidebar,
-      iconSearch,
+      iconInfoCircle,
       robotPalletIcon,
       displayCard,
       isTelevisionMode,
@@ -413,6 +415,9 @@ export default {
   //     return '325px' // Otherwise, return the original width
   //   }
   // },
+  mounted () {
+    this.getCurrentMachineData()
+  },
   methods: {
     changeStateCard (position) {
       this.displayCard[position] = !this.displayCard[position]
@@ -421,6 +426,96 @@ export default {
       this.isTelevisionMode = !this.isTelevisionMode
       if (this.isTelevisionMode) {
         this.sidebar.isCollapsed = true
+      }
+    },
+    convertSecondToMinute (second) {
+      const minutes = Math.floor(second / 60); // Full minutes
+      const seconds = second % 60;
+      return parseFloat(`${minutes}.${seconds}`);
+    },
+    assignValueToUtilizationChart (data) {
+      const upTime = data.operate_data.run_time > 0 ? this.convertSecondToMinute(data.operate_data.run_time) : 0
+      const downTime = data.operate_data.stop_time > 0 ? this.convertSecondToMinute(data.operate_data.stop_time) : 0
+      const idleTime = data.operate_data.idle_time > 0 ? this.convertSecondToMinute(data.operate_data.idle_time) : 0
+      this.dataSource.utilizationValue.data[0] = upTime
+      this.dataSource.utilizationValue.data[1] = downTime
+      this.dataSource.utilizationValue.data[2] = idleTime
+    },
+    assignValueToOeeChart (data) {
+      console.log(data)
+      this.dataSource.oeeValue.data[0].y = data.operate_data.oee_value
+      this.dataSource.aValue.data[0].y = data.operate_data.a_value
+      this.dataSource.pValue.data[0].y = data.operate_data.p_value
+      this.dataSource.qValue.data[0].y = data.operate_data.q_value
+
+      console.log('dataSource', this.dataSource.oeeValue.data[0].y)
+    },
+    async getCurrentMachineData () {
+      const sendParams = {
+        machine_name: 'ajinomoto-mc_1',
+        line_name: 'ajinomoto_pathum',
+        location: 'ajinomoto',
+      }
+      const data = await getDataFromMachine(sendParams)
+      if (data.length > 0) {
+        const obj = data[0]
+        this.assignValueToUtilizationChart(obj)
+        this.assignValueToOeeChart(obj)
+      }
+      this.getStatusLogs()
+    },
+    convertToDateUTC (dateStr) {
+      const [datePart, timePart] = dateStr.split(' ');
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [hours, minutes, seconds] = timePart.split(':').map(Number);
+
+      return Date.UTC(year, month - 1, day, hours, minutes, seconds); 
+    },
+    assignValueToTimelineChart (data) {
+      this.dataSource.timelineValue.data = []
+      let newData = []
+      data.forEach((element, index) => {
+        if (index < data.length - 1) {
+          let machineStatus = element.status
+          let color = '';
+          let label = '';
+          switch (machineStatus) {
+            case 'run':
+              color = '#6BE895'
+              label = 'RUNNING'
+              break;
+            case 'stop':
+              color = '#F27E6E'
+              label = 'STOP'
+              break;
+            case 'idle':
+              color = '#f8d363'
+              label = 'IDLE'
+              break;
+          }
+
+          newData.push({
+              x:  this.convertToDateUTC(element.created_at), // Start time (timestamp)
+              x2: this.convertToDateUTC(data[index + 1].created_at), // Stop time (timestamp)
+              y: 0, // Y-axis category (Status)
+              color: color, // Color for this state
+              label: label // State label
+          });
+        }
+      })
+      this.dataSource.timelineValue.data = [...newData]
+    },
+    async getStatusLogs () {
+      const sendParams = {
+        machine_name: 'ajinomoto-mc_1',
+        line_name: 'ajinomoto_pathum',
+        location: 'ajinomoto',
+        time_from: '2024-11-01 00:00:00',
+        time_to: '2024-11-30 23:59:59'
+      }
+      const data = await getStatusLogsFromMachine(sendParams)
+      if (data.length > 0) {
+        this.assignValueToTimelineChart(data)
       }
     }
   }
