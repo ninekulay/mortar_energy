@@ -457,6 +457,7 @@ export default {
         location: 'ajinomoto',
       }
       const data = await getDataFromMachine(sendParams)
+      console.log('data', data)
       if (data.length > 0) {
         const obj = data[0]
         this.assignValueToUtilizationChart(obj)
@@ -514,6 +515,7 @@ export default {
         time_to: '2024-11-30 23:59:59'
       }
       const data = await getStatusLogsFromMachine(sendParams)
+      console.log('data', data)
       if (data.length > 0) {
         this.assignValueToTimelineChart(data)
       }
