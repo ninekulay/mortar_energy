@@ -1,4 +1,5 @@
-FROM node:lts-alpine as build-stage
+# FROM node:lts-alpine as build-stage
+FROM node:18-alpine as build-stage
 
 # install simple http server for serving static content
 RUN npm install -g http-server
