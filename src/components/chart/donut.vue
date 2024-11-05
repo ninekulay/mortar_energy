@@ -53,7 +53,7 @@ export default {
           fontSize: '10px' // Adjust the font size as needed
         },
         labelFormatter: function () {
-          return `<span style="font-weight: bold; font-size: ${props?.dataSource?.legend?.textSize || 14}px;"> ${this.name } :</span> <span style="font-size: ${props?.dataSource?.legend?.textSize || 14}px;"> ${this.y} </span>`;
+          return `<span style="font-weight: bold; font-size: ${props?.dataSource?.legend?.textSize || 14}px;"> ${this.name } :</span> <span style="font-size: ${props?.dataSource?.legend?.textSize || 14}px;"> ${this.y} min</span>`;
         },
         align: 'left',
         verticalAlign: 'middle', // Adjust vertical alignment as needed
@@ -64,7 +64,7 @@ export default {
       tooltip: {
         headerFormat: '<span style="font-size:18px">{point.key}</span><table>',
         pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0; font-size: 16px"><b>{point.y}</b></td></tr>',
+            '<td style="padding:0; font-size: 16px"> <b>{point.y}</b> <span class="text-gray-300">min</span></td></tr>',
         footerFormat: '</table>',
         shared: true,
         useHTML: true

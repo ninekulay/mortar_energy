@@ -129,6 +129,9 @@ export default {
       () => props.dataSource,
       (newVolume) => {
         console.log('newVolume', newVolume)
+        if (newVolume?.data) {
+          gaugeOptions.series[0].data = newVolume.data
+        }
       },
       { deep: true }
     )
