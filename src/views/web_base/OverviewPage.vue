@@ -61,7 +61,7 @@
               <div class="w-full min-h-20 bg-white flex flex-col shadow-xl rounded-xl border border-gray-100" style="height: calc(100%); min-height: 230px;">
                 <div class=" w-full flex justify-start items-center gap-2">
                   <h2 class="font-semibold bg-gray-300  px-2 py-1 mt-2 ml-2 rounded-md">OEE</h2>
-                  <label class="text-gray-500 py-2 mt-2 text-sm">(08.00 - 07.59)</label>
+                  <label class="text-gray-500 py-2 mt-2 text-sm">{{ this.dataSource.standardData.productionTime.timeFrom }} - {{ this.dataSource.standardData.productionTime.timeTo }}</label>
                 </div>
                 <div class="w-full h-full flex justify-center" v-show="userScreenType !== 'tablet2'">
                   <div class="w-full flex flex-col justify-center m-0 p-0 relative items-center">
@@ -166,7 +166,7 @@
               <div class="w-full min-h-20 bg-white flex flex-col shadow-xl rounded-xl border border-gray-100 gap-4" style="height: calc(75%); min-height: 230px;">
                 <div class="w-full flex justify-start items-center gap-2">
                   <h2 class="font-semibold px-2 py-2 bg-gray-300 mt-2 ml-2 rounded-md">Utilization</h2>
-                  <label class="text-gray-500 py-2 mt-2 text-sm">(08.00 - 07.59)</label>
+                  <label class="text-gray-500 py-2 mt-2 text-sm">{{ this.dataSource.standardData.productionTime.timeFrom }} - {{ this.dataSource.standardData.productionTime.timeTo }}</label>
                 </div>
                 <div class="w-full px-4 flex justify-center" style="margin-top: -15px;">
                     <d-chart-donut :data-source="dataSource.utilizationValue" style="height: 150px;"/>
@@ -175,7 +175,7 @@
               <div class="w-full min-h-20 bg-white shadow-xl rounded-xl border border-gray-100" style="height: calc(75%); min-height: 220px;">
                 <div class="w-full flex justify-start items-center gap-2">
                   <h2 class="font-semibold px-2 py-2 bg-gray-300 mt-2 ml-2 rounded-md">Timeline</h2>
-                  <label class="text-gray-500 py-2 mt-2 text-sm">(08.00 - 07.59)</label>
+                  <label class="text-gray-500 py-2 mt-2 text-sm">{{ this.dataSource.standardData.productionTime.timeFrom }} - {{ this.dataSource.standardData.productionTime.timeTo }}</label>
                 </div>
                 <div class="w-full px-4">
                   <d-chart-timeline :data-source="dataSource.timelineValue" style="height: 150px;"/>
@@ -196,6 +196,8 @@ import { iconInfoCircle, robotPalletIcon } from '@/utils/helper-asset-icon.ts'
 import { DChartCircleGauge, DChartDonut, DChartTimeline } from '@/components/export'
 import { getDataFromMachine } from '@/store/machineStatus'
 import { getStatusLogsFromMachine } from '@/store/machineStatusLogs'
+import { getStandardDataFromUser } from '@/store/standardSettings'
+import { getUserAuth } from '@/store/userManagement'
 
 export default {
   name: 'OverviewPage',
@@ -224,6 +226,12 @@ export default {
     })
 
     const dataSource = reactive({
+      standardData: {
+        productionTime: {
+          timeFrom: '',
+          timeTo: '',
+        }
+      },
       oeeValue: {
         title: '',
         fontSize: '16px',
@@ -416,7 +424,14 @@ export default {
   //   }
   // },
   mounted () {
-    this.getCurrentMachineData()
+    const standardData = sessionStorage.getItem('standardData')
+    const machineList = sessionStorage.getItem('machineList')
+    if (standardData && machineList) {
+      this.assignStandardData(JSON.parse(standardData))
+      this.getCurrentMachineData()
+    } else {
+      this.getStandardData()
+    }
   },
   methods: {
     changeStateCard (position) {
@@ -442,13 +457,10 @@ export default {
       this.dataSource.utilizationValue.data[2] = idleTime
     },
     assignValueToOeeChart (data) {
-      console.log(data)
       this.dataSource.oeeValue.data[0].y = data.operate_data.oee_value
       this.dataSource.aValue.data[0].y = data.operate_data.a_value
       this.dataSource.pValue.data[0].y = data.operate_data.p_value
       this.dataSource.qValue.data[0].y = data.operate_data.q_value
-
-      console.log('dataSource', this.dataSource.oeeValue.data[0].y)
     },
     async getCurrentMachineData () {
       const sendParams = {
@@ -457,7 +469,6 @@ export default {
         location: 'ajinomoto',
       }
       const data = await getDataFromMachine(sendParams)
-      console.log('data', data)
       if (data.length > 0) {
         const obj = data[0]
         this.assignValueToUtilizationChart(obj)
@@ -507,17 +518,63 @@ export default {
       this.dataSource.timelineValue.data = [...newData]
     },
     async getStatusLogs () {
+      const now = new Date()
+      // const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
+      const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`
+      const tomorrow = new Date()
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      const formattedTomorrow = `${tomorrow.getFullYear()}-${(tomorrow.getMonth() + 1).toString().padStart(2, '0')}-${tomorrow.getDate().toString().padStart(2, '0')}`
+
       const sendParams = {
         machine_name: 'ajinomoto-mc_1',
         line_name: 'ajinomoto_pathum',
         location: 'ajinomoto',
-        time_from: '2024-11-01 00:00:00',
-        time_to: '2024-11-30 23:59:59'
+        time_from: `${formattedDate} ${this.dataSource.standardData.productionTime.timeFrom}:00`,
+        time_to: `${formattedTomorrow} ${this.dataSource.standardData.productionTime.timeTo}:00`
       }
+      console.log('sendParams', sendParams)
       const data = await getStatusLogsFromMachine(sendParams)
       console.log('data', data)
       if (data.length > 0) {
         this.assignValueToTimelineChart(data)
+      }
+    },
+    async getStdData () {
+      const userAuth = await getUserAuth()
+      if (userAuth) {
+        const data = await getStandardDataFromUser({ email: userAuth.username })
+        if (data.length > 0) {
+          const groupDataByLine = {}
+          data.forEach(item => {
+            if (!Object.prototype.hasOwnProperty.call(groupDataByLine, item.line_name)) {
+              groupDataByLine[item.line_name] = {}
+              groupDataByLine[item.line_name][`${item.data_type}`] = []
+              groupDataByLine[item.line_name][`${item.data_type}`].push(item)
+            } else {
+              if (!Object.prototype.hasOwnProperty.call(groupDataByLine[item.line_name], `${item.data_type}`)) {
+                groupDataByLine[item.line_name] = {}
+                groupDataByLine[item.line_name][`${item.data_type}`] = []
+              }
+              groupDataByLine[item.line_name][`${item.data_type}`].push(item)
+            }
+          })
+          this.assignStandardData(groupDataByLine['ajinomoto_pathum'])
+          sessionStorage.setItem('standardData', JSON.stringify(groupDataByLine['ajinomoto_pathum']))
+          sessionStorage.setItem('lineList', JSON.stringify(Object.keys(groupDataByLine)))
+          this.getCurrentMachineData()
+        }
+      }
+    },
+    assignStandardData (data) {
+      for (const key in data) {
+        if (data[key] !== null && data[key] !== undefined) {
+          switch (key) {
+            case 'production_time':
+              this.dataSource.standardData.productionTime.timeFrom = data[key][0].setting_data.time_from
+              this.dataSource.standardData.productionTime.timeTo = data[key][0].setting_data.time_to
+              break;
+          }
+        }
       }
     }
   }
