@@ -128,7 +128,7 @@ export default {
     const logout = () => {
       sessionStorage.removeItem('userAuth')
       sessionStorage.removeItem('userToken')
-      routeTo('login')
+      routeTo('LoginPage')
     }
 
     const classBindingCollapsed = computed(() => {

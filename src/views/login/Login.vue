@@ -6,13 +6,13 @@
                 <h2 for="email" class="text-left p-2 w-1/3 font-semibold cursor-default">Email</h2>
             </div>
             <div class="flex w-full justify-start px-4 gap-4">
-                <input v-model="email" type="email" placeholder="Email" class="w-full p-2 border border-sky-300 rounded-lg" />
+                <input v-model="dataSource.email" type="email" placeholder="Email" class="w-full p-2 border border-sky-300 rounded-lg" />
             </div>
             <div class="flex w-full justify-start px-4 gap-4">
                 <h2 for="email" class="text-left p-2 w-1/3 font-semibold cursor-default">Password</h2>
             </div>
             <div class="flex w-full justify-start px-4 gap-4">
-                <input v-model="password" type="password" placeholder="Password" class="w-full p-2 border border-sky-300 rounded-lg" />
+                <input v-model="dataSource.password" type="password" placeholder="Password" class="w-full p-2 border border-sky-300 rounded-lg" />
             </div>
             <div class="flex w-full justify-center items-center mt-8">
                 <button @click="login" class="w-2/3 p-2 bg-sky-500 text-white rounded-lg font-semibold shadow-lg hover:bg-sky-600">Login</button>
@@ -61,6 +61,7 @@ import { logoQonnectBlackFull, logoQonnectWhiteFull, logoQonnectWhiteFullSvg } f
 import { ref } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+import { userLogin, saveUserAuth } from '@/store/userManagement'
 
 export default {
     name: 'LoginPage',
@@ -78,16 +79,32 @@ export default {
             header: 'Login Failed',
             message: 'Please check your email and password'
         })
+        const dataSource = ref({
+            email: '',
+            password: ''
+        })
         return {
             logoQonnectBlackFull,
             logoQonnectWhiteFull,
             logoQonnectWhiteFullSvg,
             modal,
+            dataSource
         }
     },
     methods: {
         async login() {
-           this.modal.open = !this.modal.open
+        //    this.modal.open = !this.modal.open
+            const sendParams = {
+                email: this.dataSource.email,
+                password: this.dataSource.password
+            }
+            const result = await userLogin(sendParams)
+            if (result.message.toLowerCase() === 'ok') {
+                saveUserAuth(result.token)
+                this.$router.push({ name: 'home' })
+            } else {
+                this.modal.open = !this.modal.open
+            }
         }
     }
 }
