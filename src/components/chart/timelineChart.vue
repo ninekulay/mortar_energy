@@ -26,15 +26,14 @@ export default {
   },
   setup (props) {
     // eslint-disable-next-line no-unused-vars
-    const parseDateToUTC = (dateStr) => {
-      const [datePart, timePart] = dateStr.split(' ');
-      const [year, month, day] = datePart.split('-').map(Number);
-      const [hours, minutes, seconds] = timePart.split(':').map(Number);
+    // const parseDateToUTC = (dateStr) => {
+    //   const [datePart, timePart] = dateStr.split(' ');
+    //   const [year, month, day] = datePart.split('-').map(Number);
+    //   const [hours, minutes, seconds] = timePart.split(':').map(Number);
 
-      return Date.UTC(year, month - 1, day, hours, minutes, seconds); 
-    }
-    const utcDate = parseDateToUTC('2024-09-19 10:00:00')
-    console.log('utcDate', utcDate, Date.UTC(2024, 8, 19, 10, 0))
+    //   return Date.UTC(year, month - 1, day, hours, minutes, seconds); 
+    // }
+    // const utcDate = parseDateToUTC('2024-09-19 10:00:00')
     const gaugeOptions = reactive({
       chart: {
         type: 'xrange',
@@ -128,7 +127,6 @@ export default {
     watch(
       () => props.dataSource,
       (newVolume) => {
-        console.log('newVolume', newVolume)
         if (newVolume?.data) {
           gaugeOptions.series[0].data = newVolume.data
         }

@@ -18,7 +18,6 @@ export default {
     }
   },
   setup (props) {
-    console.log('props', props)
     const gaugeOptions = reactive({
       chart: {
         type: 'pie',
