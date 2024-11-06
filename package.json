@@ -12,6 +12,7 @@
     "@heroicons/vue": "^2.1.5",
     "axios": "^1.7.7",
     "core-js": "^3.8.3",
+    "crypto-js": "^4.2.0",
     "highcharts": "^11.4.8",
     "highcharts-vue": "^2.0.1",
     "i": "^0.3.7",
