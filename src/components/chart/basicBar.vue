@@ -22,7 +22,8 @@ export default {
     const gaugeOptions = reactive({
       chart: {
         type: 'column',
-        width: props?.width || null
+        width: props?.width || null,
+        height: props.dataSource?.height || 300
       },
       title: {
         text: props.dataSource.name,
@@ -46,9 +47,9 @@ export default {
       },
 
       legend: {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'middle',
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'bottom',
         enabled: true
       },
 
@@ -109,6 +110,9 @@ export default {
         }
         if (newVolume?.xAxis?.visible !== undefined) {
           gaugeOptions.xAxis.visible = newVolume.xAxis.visible
+        }
+        if (newVolume?.height !== undefined) {
+          gaugeOptions.chart.height = newVolume.height
         }
       },
       { deep: true }

@@ -12,18 +12,14 @@ export default {
   name: 'C-Chart-StackBar',
   components: { Chart },
   props: {
-    dataSource: {},
-    width: {
-      type: String,
-      default: '600'
-    }
+    dataSource: {}
   },
   setup (props) {
     const gaugeOptions = reactive({
       chart: {
         type: 'column',
-        width: props.width || null,
-        height: null
+        width: null,
+        height: props.dataSource?.height || 400
       },
       title: {
         text: null,
@@ -41,7 +37,7 @@ export default {
       },
 
       xAxis: {
-        categories: []
+        categories: props?.dataSource?.categories || [],
       },
 
       legend: {
@@ -62,7 +58,7 @@ export default {
         headerFormat: '<b>{point.x}</b><br/>',
         pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
       },
-      series: [],
+      series: props?.dataSource?.data || [],
       responsive: {
         rules: [{
           condition: {

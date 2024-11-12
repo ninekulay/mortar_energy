@@ -16,9 +16,10 @@ export default {
   },
   setup (props) {
     const gaugeOptions = reactive({
-    //   chart: {
-    //     zoomType: 'xy'
-    //   },
+      chart: {
+        // zoomType: 'xy'
+        height: props.dataSource.height || 400
+      },
       title: {
         text: props.dataSource.name,
         align: 'center'
@@ -47,11 +48,15 @@ export default {
       },
 
       legend: {
-        align: 'right',
-        // x: 80,
-        verticalAlign: 'top',
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'bottom',
+        enabled: true,
+        // align: 'bottom',
+        // // x: 80,
+        // verticalAlign: 'top',
         // y: 0,
-        floating: true,
+        // floating: true,
         backgroundColor: 'rgba(255,255,255,0.25)'
       },
       series: [{
@@ -97,6 +102,9 @@ export default {
         if (newVolume.dataLabels !== undefined) {
           gaugeOptions.series[0].dataLabels.enabled = newVolume.dataLabels
           gaugeOptions.series[1].dataLabels.enabled = newVolume.dataLabels
+        }
+        if (newVolume.height !== undefined) {
+          gaugeOptions.chart.height = newVolume.height
         }
       },
       { deep: true }
