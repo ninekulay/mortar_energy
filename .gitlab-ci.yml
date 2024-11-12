@@ -1,26 +1,17 @@
-image: node:18  # Use a Node.js image for running the build and deployment steps
+image: node:18  # Use a Node.js Docker image for the CI/CD pipeline
 
 stages:
   - build_prod
-  - check_port_prod
   - deploy_prod
 
 variables:
-  IMAGE_NAME: my-oee-app
-  CONTAINER_NAME: my-oee-app
-  HOST_PORT: 8080
-  INSIDE_PORT: 8080
   ENV_FILE: .env.production  # Define the environment file
-  REMOTE_PATH: /home/ubuntu/oee-app  # Path on your server where the app will be deployed
+  VUE_APP_PATH: /home/ubuntu/oee_app  # Define your Vue.js app's path on the server
 
 before_script:
-  - echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
-  - echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
-  - source ~/.bashrc  # For Bash
-  - |
-    if [ -s "$NVM_DIR/nvm.sh" ]; then
-      \. "$NVM_DIR/nvm.sh"  # Load NVM
-    fi
+  - echo "Installing NVM"
+  - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash  # Install NVM
+  - source ~/.nvm/nvm.sh
   - nvm install 18.17.1
   - nvm use 18.17.1
   - node --version
@@ -28,54 +19,17 @@ before_script:
 
 build_prod:
   stage: build_prod
-  tags:
-    - oee_apps_prod
   script:
-    - echo "VUE_APP_URL_BACKEND=$CI_VUE_APP_URL_BACKEND" >> $ENV_FILE
-    - echo "VUE_APP_SERVICE_AUTH_PASSWORD=$CI_SERVICE_AUTH_PASSWORD" >> $ENV_FILE
-    - echo "VUE_APP_SERVICE_AUTH_USER=$CI_SERVICE_AUTH_USER" >> $ENV_FILE
-    - echo "VUE_APP_SECRET_FRONT=$CI_VUE_APP_SECRET_FRONT" >> $ENV_FILE
-    - npm install --force
+    - npm install  # Install dependencies
     - npm run build  # Build the production app
-  artifacts:
-    paths:
-      - dist/
-      - $ENV_FILE
 
-check_port_prod:
-  stage: check_port_prod
-  needs:
-    - build_prod
-  script:
-    - |
-      PORT=8080
-      # Check if the port is in use, and stop the process if necessary
-      CONTAINER_ID=$(docker ps -qf "expose=$PORT")
-      if [ -n "$CONTAINER_ID" ]; then
-        echo "Stopping the app running on port $PORT"
-        docker stop $CONTAINER_ID
-        docker rm $CONTAINER_ID
-      else
-        echo "No app is running on port $PORT."
-      fi
-
-deploy_to_prod:
+deploy_prod:
   stage: deploy_prod
-  needs:
-    - build_prod
-    - check_port_prod
   script:
-    - echo "Deploying to the production server using PM2"
-    - echo "Stopping PM2 process if it exists"
-    - pm2 delete oee-app || echo 'No PM2 process to stop'
-    
-    # Copy the dist folder to your server's application directory
-    - echo "Copying dist folder to the production server"
-    - cp -r dist/* $REMOTE_PATH
-
-    # Start the app with PM2
-    - echo "Starting Vue app with PM2"
-    - cd $REMOTE_PATH && pm2 start ./dist --name oee-app -- --port 8080
-
-    # Optionally, save PM2 process list to ensure it auto-starts on reboot
-    - pm2 save
+    - echo "Deploying Vue.js app to the server"
+    - cd $VUE_APP_PATH  # Navigate to your app directory
+    - git pull origin main  # Optional: Update app from Git (if using Git for deployment)
+    - npm install --production  # Install production dependencies
+    - pm2 stop oee-app || true  # Stop the app if it's running
+    - pm2 start npm --name "oee-app" -- run start  # Start the app using PM2
+    - pm2 save  # Save PM2 process list for automatic startup
