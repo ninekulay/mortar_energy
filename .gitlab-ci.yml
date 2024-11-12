@@ -8,6 +8,14 @@ variables:
   VUE_APP_PATH: "/home/ubuntu/my-oee-app"  # Adjust the path based on your server's file structure
 
 before_script:
+  - echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
+  - echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+  - source ~/.bashrc  # For Bash
+  - |
+    if [ -s "$NVM_DIR/nvm.sh" ]; then
+      \. "$NVM_DIR/nvm.sh"  # Load NVM
+    fi
+  - nvm install 18.17.1
   - nvm use 18.17.1  # Use Node version 18
   - node --version  # Verify node version
   - npm --version  # Verify npm version
