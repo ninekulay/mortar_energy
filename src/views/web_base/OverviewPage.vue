@@ -12,16 +12,99 @@
                 <!-- Image Container -->
                 <div class="relative" :style="userScreenType === 'tablet' ? 'max-width: 500px; max-height: 500px;' : ''">
                   <img :src="robotPalletIcon" class="object-cover w-full" alt="robot pallet">
-                  
-                  <!-- Button 1 - positioned relative to image -->
-                  <button class="absolute" style="top: 42%; left: 2%;" @click="changeStateCard('position1')">
+
+                  <div class="w-full px-4 flex flex-col items-center gap-2">
+                    <div class="gap-4 bg-orange-200 border border-black flex justify-center py-2 rounded-md" style="width: 90%;">
+                      <h2
+                      class="font-semibold"
+                      >
+                        Machine Name : <span class="font-normal">{{ dataSource.friendlyMachineName }}</span>
+                      </h2>
+                      <h2
+                      class="font-semibold"
+                      >
+                        SKU : <span class="font-normal">{{ dataSource.standardData.productionSetting.sku }}</span>
+                      </h2>
+                    </div>
+                    <div :class="`gap-4 border border-black flex justify-center py-2 rounded-md ${backgroundMachineStatus}`" style="width: 90%;">
+                      <h2
+                      class="font-semibold"
+                      >
+                        Machine Status : <span class="font-normal">{{ dataSource.machineStatus }}</span>
+                      </h2>
+                    </div>
+                  </div>
+
+                  <button class="absolute" style="top: 1%; left: 4%;" @click="changeStateCard('positionProductionReport')">
                     <img :src="iconInfoCircle" class="object-cover" alt="search"/>
                   </button>
 
-                  <!-- Button 2 - positioned relative to image -->
-                  <button class="absolute" style="top: 15%; right: 2%;" @click="changeStateCard('position2')">
+                  <button class="absolute" style="bottom: 15%; right: 4%;" @click="changeStateCard('positionProductionTime')">
                     <img :src="iconInfoCircle" class="object-cover" alt="search"/>
                   </button>
+                  
+                  <!-- <button class="absolute" style="top: 42%; left: 2%;" @click="changeStateCard('position1')">
+                    <img :src="iconInfoCircle" class="object-cover" alt="search"/>
+                  </button>
+
+                  <button class="absolute" style="top: 15%; right: 2%;" @click="changeStateCard('position2')">
+                    <img :src="iconInfoCircle" class="object-cover" alt="search"/>
+                  </button> -->
+                </div>
+              </div>
+
+              <div class="bg-gray-300 min-h-20 p-4 rounded-md flex flex-col gap-2 absolute shadow-lg" style="top: 2%; left: 4%;" v-if="displayCard.positionProductionReport">
+                <div class="flex justify-between gap-4 items-center">
+                  <div class="flex justify-start gap-4 items-center">
+                    <!-- <div class="bg-green-400 rounded-full h-4 w-4 border border-black"></div> -->
+                    <h2 class="text-black font-semibold">Production Report</h2>
+                  </div>
+                  <h2 class="text-black font-semibold border border-black rounded-full px-2 py-1 cursor-pointer bg-gray-100" @click="() => displayCard.positionProductionReport = false">X</h2>
+                </div>
+                <div class="bg-white h-full rounded-lg flex flex-col gap-2 py-2">
+                  <div class="flex flex-col justify-start items-start px-4 gap-4">
+                    <div class="grid grid-cols-[100px,auto,auto]">
+                      <h2 class="text-left">Target</h2>
+                      <h2 class="text-left">: {{dataSource.standardData.productionSetting.target}} pcs</h2>
+                      <h2 class="text-left">/ {{ dataSource.standardData.productionSetting.target / dataSource.standardData.productionSetting.pcsPerLot }} Lot</h2>
+                    </div>
+                    <div class="grid grid-cols-[100px,auto,auto]">
+                      <h2 class="text-left">Actual</h2>
+                      <h2 class="text-left">: {{ dataSource.countItem }} pcs</h2>
+                      <h2 class="text-left">/ {{ dataSource.countItem / dataSource.standardData.productionSetting.pcsPerLot }} Lot</h2>
+                    </div>
+                    <div class="grid grid-cols-[100px,auto,auto]">
+                      <h2 class="text-left">Remain</h2>
+                      <h2 class="text-left">: {{ dataSource.standardData.productionSetting.target - dataSource.countItem < 1 ? 0 : dataSource.standardData.productionSetting.target - dataSource.countItem}} pcs</h2>
+                      <h2 class="text-left">/ {{ dataSource.standardData.productionSetting.target - dataSource.countItem < 0 ? 0 : (dataSource.standardData.productionSetting.target - dataSource.countItem) / dataSource.standardData.productionSetting.pcsPerLot }} Lot</h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gray-300 min-h-20 p-4 rounded-md flex flex-col gap-2 absolute shadow-lg" style="bottom: 20%; right: 4%;" v-if="displayCard.positionProductionTime">
+                <div class="flex justify-between gap-4 items-center">
+                  <div class="flex justify-start gap-4 items-center">
+                    <!-- <div class="bg-green-400 rounded-full h-4 w-4 border border-black"></div> -->
+                    <h2 class="text-black font-semibold">Production Time</h2>
+                  </div>
+                  <h2 class="text-black font-semibold border border-black rounded-full px-2 py-1 cursor-pointer bg-gray-100" @click="() => displayCard.positionProductionTime = false">X</h2>
+                </div>
+                <div class="bg-white h-full rounded-lg flex flex-col gap-2 py-2">
+                  <div class="flex flex-col justify-start items-start px-4 gap-4 w-full">
+                    <div class="grid grid-cols-[180px,150px]">
+                      <h2 class="text-left">Estimate Time</h2>
+                      <h2 class="text-left">: {{ (dataSource.standardData.productionSetting.target / dataSource.standardData.productionSetting.standardTime).toFixed(2) }} min.</h2>
+                    </div>
+                    <div class="grid grid-cols-[180px,150px]">
+                      <h2 class="text-left">Production Time</h2>
+                      <h2 class="text-left">: {{ dataSource.actualCycleTime > 0 ?  (dataSource.actualCycleTime / dataSource.standardData.productionSetting.standardTime).toFixed(2) : '-' }} min.</h2>
+                    </div>
+                    <div class="grid grid-cols-[180px,150px]">
+                      <h2 class="text-left">Remain Time</h2>
+                      <h2 class="text-left">: {{ dataSource.standardData.productionSetting.target - dataSource.countItem < 1 ? 0 : ((dataSource.standardData.productionSetting.target - dataSource.countItem)/dataSource.standardData.productionSetting.standardTime ).toFixed(2) }} min.</h2>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -29,7 +112,7 @@
                 <div class="flex justify-between gap-4 items-center">
                   <div class="flex justify-start gap-4 items-center">
                     <div class="bg-green-400 rounded-full h-4 w-4 border border-black"></div>
-                    <h2 class="text-black font-semibold">Industrial Robot 101</h2>
+                    <h2 class="text-black font-semibold">{{ dataSource.friendlyMachineName }}</h2>
                   </div>
                   <h2 class="text-black font-semibold border border-black rounded-full px-2 py-1 cursor-pointer bg-gray-100" @click="() => displayCard.position1 = false">X</h2>
                 </div>
@@ -163,19 +246,29 @@
                   </div>
                 </div>
               </div>
-              <div class="w-full min-h-20 bg-white flex flex-col shadow-xl rounded-xl border border-gray-100 gap-4" style="height: calc(75%); min-height: 230px;">
+              <div class="w-full min-h-20 bg-white flex flex-col shadow-xl rounded-xl border border-gray-100 gap-4 utilization-div">
                 <div class="w-full flex justify-start items-center gap-2">
                   <h2 class="font-semibold px-2 py-2 bg-gray-300 mt-2 ml-2 rounded-md">Utilization</h2>
-                  <label class="text-gray-500 py-2 mt-2 text-sm">{{ this.dataSource.standardData.productionTime.timeFrom }} - {{ this.dataSource.standardData.productionTime.timeTo }}</label>
+                  <label class="text-gray-500 py-2 mt-2 text-sm">{{ dataSource.standardData.productionTime.timeFrom }} - {{ dataSource.standardData.productionTime.timeTo }}</label>
                 </div>
-                <div class="w-full px-4 flex justify-center" style="margin-top: -15px;">
-                    <d-chart-donut :data-source="dataSource.utilizationValue" style="height: 150px;"/>
+                <div class="w-full px-4 flex sm:flex-col xl:flex-row justify-center h-full" style="margin-top: -15px;">
+                    <div class="sm:w-full xl:w-2/3 h-full">
+                      <d-chart-donut :data-source="dataSource.utilizationValue" style="height: 150px;"/>
+                    </div>
+                    <div class="sm:w-full xl:w-1/3 flex flex-col gap-4 items-center justify-center h-full progress-bar-div">
+                      <span class="font-semibold">Production Progress</span>
+                      <div class="w-full h-8 border border-gray-500 rounded-lg bg-white items-center flex">
+                        <!-- Progress bar, width dynamically set -->
+                        <div class="bg-black h-full rounded-lg" :style="{ width: dataSource.productionProgress + '%', height: 80 + '%', marginLeft: 1 + 'px', marginRight: 1 + 'px' }"></div>
+                      </div>
+                      <h2>{{ dataSource.productionProgress }}% <span class="text-sm text-gray-500">({{dataSource.countItem}} / {{dataSource.standardData.productionSetting.target}})</span></h2>
+                    </div>
                 </div>
               </div>
               <div class="w-full min-h-20 bg-white shadow-xl rounded-xl border border-gray-100" style="height: calc(75%); min-height: 220px;">
                 <div class="w-full flex justify-start items-center gap-2">
                   <h2 class="font-semibold px-2 py-2 bg-gray-300 mt-2 ml-2 rounded-md">Timeline</h2>
-                  <label class="text-gray-500 py-2 mt-2 text-sm">{{ this.dataSource.standardData.productionTime.timeFrom }} - {{ this.dataSource.standardData.productionTime.timeTo }}</label>
+                  <label class="text-gray-500 py-2 mt-2 text-sm">{{ dataSource.standardData.productionTime.timeFrom }} - {{ dataSource.standardData.productionTime.timeTo }}</label>
                 </div>
                 <div class="w-full px-4">
                   <d-chart-timeline :data-source="dataSource.timelineValue" style="height: 150px;"/>
@@ -216,7 +309,9 @@ export default {
 
     const displayCard = reactive({
       position1: false,
-      position2: false
+      position2: false,
+      positionProductionReport: false,
+      positionProductionTime: false
     })
 
     const isTelevisionMode = ref(false)
@@ -226,12 +321,23 @@ export default {
     })
 
     const dataSource = reactive({
+      friendlyMachineName: '',
+      machineStatus: '',
+      countItem: 0,
+      actualCycleTime: 0,
       standardData: {
         productionTime: {
           timeFrom: '',
           timeTo: '',
+        },
+        productionSetting: {
+          sku: '',
+          target: 1,
+          standardTime: 1,
+          pcsPerLot: 1
         }
       },
+      productionProgress: 0,
       oeeValue: {
         title: '',
         fontSize: '16px',
@@ -411,18 +517,21 @@ export default {
       userScreenType
     }
   },
-  // computed: {
-  //   computedWidth () {
-  //     const screenWidth = window.innerWidth // Get the current screen width
-  //     const maxWidth = 150 // Set the maximum width
+  computed: {
+    backgroundMachineStatus () {
+      return this.dataSource.machineStatus.toUpperCase() === 'RUN' ? 'bg-green-400' : this.dataSource.machineStatus.toUpperCase() === 'STOP' ? 'bg-red-400' : 'bg-yellow-400'
+    }
+    // computedWidth () {
+    //   const screenWidth = window.innerWidth // Get the current screen width
+    //   const maxWidth = 150 // Set the maximum width
 
-  //     // Check screen width and apply the conditions
-  //     if (screenWidth <= 1024) {
-  //       return `${maxWidth}px` // Set to 200px if width > 200
-  //     }
-  //     return '325px' // Otherwise, return the original width
-  //   }
-  // },
+    //   // Check screen width and apply the conditions
+    //   if (screenWidth <= 1024) {
+    //     return `${maxWidth}px` // Set to 200px if width > 200
+    //   }
+    //   return '325px' // Otherwise, return the original width
+    // }
+  },
   mounted () {
     const standardData = sessionStorage.getItem('standardData')
     const machineList = sessionStorage.getItem('machineList')
@@ -430,7 +539,7 @@ export default {
       this.assignStandardData(JSON.parse(standardData))
       this.getCurrentMachineData()
     } else {
-      this.getStandardData()
+      this.getStdData()
     }
   },
   methods: {
@@ -473,8 +582,19 @@ export default {
         const obj = data[0]
         this.assignValueToUtilizationChart(obj)
         this.assignValueToOeeChart(obj)
+        this.assugnStandardDataDisplay(obj)
       }
       this.getStatusLogs()
+    },
+    assugnStandardDataDisplay (data) {
+      this.dataSource.machineStatus = data.machine_status.toUpperCase()
+      this.dataSource.friendlyMachineName = data.friendly_machine_name
+      this.dataSource.standardData.productionSetting.sku = data.production_setting.product_id
+      this.dataSource.standardData.productionSetting.target = data.production_setting.production_target
+      this.dataSource.countItem = data.operate_data.count_item
+      let progessCount = (data.operate_data.count_item / data.production_setting.production_target) * 100
+      progessCount = parseFloat(progessCount) > 100 ? 100 : progessCount
+      this.dataSource.productionProgress = !isNaN(progessCount) && progessCount !== undefined && progessCount !== null ? progessCount.toFixed(2) : 0
     },
     convertToDateUTC (dateStr) {
       const [datePart, timePart] = dateStr.split(' ');
@@ -532,9 +652,7 @@ export default {
         time_from: `${formattedDate} ${this.dataSource.standardData.productionTime.timeFrom}:00`,
         time_to: `${formattedTomorrow} ${this.dataSource.standardData.productionTime.timeTo}:00`
       }
-      console.log('sendParams', sendParams)
       const data = await getStatusLogsFromMachine(sendParams)
-      console.log('data', data)
       if (data.length > 0) {
         this.assignValueToTimelineChart(data)
       }
@@ -580,3 +698,25 @@ export default {
   }
 }
 </script>
+<style scoped>
+.utilization-div {
+  height: calc(75%);
+  min-height: 230px;
+}
+.progress-bar-div {
+  margin-top: -15px;
+}
+@media (max-width: 1280px) {
+  .utilization-div {
+    min-height: 330px;
+  }
+  .progress-bar-div {
+    margin-top: 0px;
+  }
+}
+@media (min-width: 1280px) {
+  .utilization-div {
+    min-height: 230px;
+  }
+}
+</style>

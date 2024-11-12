@@ -71,17 +71,17 @@ export default {
     const route = useRoute()
     const menu = reactive([
       { title: 'Overview', label: 'Overview', link: 'home', icon: 'pieIcon', iconActive: 'pieIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'History', label: 'History', link: 'History', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'Plan', label: 'Plan', link: 'UploadPlan', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'Reject', label: 'Reject', link: 'RejectLogs', icon: 'documentMinusIcon', iconActive: 'documentMinusIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'History', label: 'History', link: 'HistoricalChart', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      // { title: 'Plan', label: 'Plan', link: 'UploadPlan', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      // { title: 'Reject', label: 'Reject', link: 'RejectLogs', icon: 'documentMinusIcon', iconActive: 'documentMinusIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
       { title: 'Settings', label: 'Settings', link: 'UserSetting', icon: 'toolsIconWhite', iconActive: 'toolsIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
 
     ])
     const menuMinimize = reactive([
       { title: 'Overview', label: 'Machine Overview', link: 'home', icon: 'pieIcon', iconActive: 'pieIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'History', label: 'History', link: 'History', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'Plan', label: 'Plan', link: 'UploadPlan', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'Reject', label: 'Reject', link: 'RejectLogs', icon: 'documentMinusIcon', iconActive: 'documentMinusIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'History', label: 'History', link: 'HistoricalChart', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      // { title: 'Plan', label: 'Plan', link: 'UploadPlan', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      // { title: 'Reject', label: 'Reject', link: 'RejectLogs', icon: 'documentMinusIcon', iconActive: 'documentMinusIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
       { title: 'Settings', label: 'Settings', link: 'UserSetting', icon: 'toolsIconWhite', iconActive: 'toolsIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
     ])
 
