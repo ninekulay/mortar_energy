@@ -4,94 +4,16 @@ services:
   - docker:dind
 
 stages:
-  - build_dev
-  - check_port_dev
-  - deploy_dev
   - build_prod
   - check_port_prod
   - deploy_prod
 
 variables:
-  IMAGE_NAME: my-vue-app
-  CONTAINER_NAME: my-vue-app
+  IMAGE_NAME: my-oee-app
+  CONTAINER_NAME: my-oee-app
   HOST_PORT: 8080
   INSIDE_PORT : 8080
   ENV_FILE: .env.production  # Define the environment file
-
-build_dev:
-  stage: build_dev
-  image: node:18
-  tags:
-    - oee_apps_dev
-  when: manual
-  script:
-    - echo "VUE_APP_URL_BACKEND=$CI_VUE_APP_URL_BACKEND" >> $ENV_FILE
-    - echo "VUE_APP_SERVICE_AUTH_PASSWORD=$CI_SERVICE_AUTH_PASSWORD" >> $ENV_FILE
-    - echo "VUE_APP_SERVICE_AUTH_USER=$CI_SERVICE_AUTH_USER" >> $ENV_FILE
-    - echo "VUE_APP_SECRET_FRONT=$CI_VUE_APP_SECRET_FRONT" >> $ENV_FILE
-    - echo "PATH='${PATH}'"
-    - npm install --force
-    - npm run build
-    - npm list tailwindcss
-  artifacts:
-    paths:
-      - dist/
-      - $ENV_FILE
-
-check_port_dev:
-  stage: check_port_dev
-  tags:
-    - oee_apps_dev
-  needs:
-    - build_dev
-  script:
-    - |
-      PORT=8080
-      CONTAINER_ID=$(docker ps -qf "expose=$PORT")
-      if [ -n "$CONTAINER_ID" ]; then
-        echo "Container is already running on port $PORT. Stopping and removing it..."
-        docker stop $CONTAINER_ID
-        docker rm $CONTAINER_ID
-      else
-        echo "No container is running on port $PORT."
-      fi
-
-before_script:
-  - echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
-  - echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
-  - source ~/.bashrc  # For Bash
-  - |
-    if [ -s "$NVM_DIR/nvm.sh" ]; then
-      \. "$NVM_DIR/nvm.sh"  # Load NVM
-    fi
-  - nvm install 18.17.1
-  - nvm use 18.17.1
-  - node --version
-  - npm --version
-
-deploy_to_dev:
-  stage: deploy_dev
-  script:
-    - echo "Deploying to dev server"
-  only:
-    - backend-dev
-  tags:
-    - oee_apps_dev
-  needs:
-    - build_dev
-  when: manual
-  script:
-    - docker image ls
-    - |
-      CONTAINER_ID=$(docker ps -aqf "name=$CONTAINER_NAME")
-      if [ -n "$CONTAINER_ID" ]; then
-        echo "Container is already running. Stopping and removing it..."
-        docker stop $CONTAINER_ID
-        docker rm $CONTAINER_ID  # Remove the old container
-      fi
-    - docker build --no-cache -t $IMAGE_NAME .
-    - docker run --restart always -d -p $HOST_PORT:$INSIDE_PORT --name $CONTAINER_NAME --env-file $ENV_FILE $IMAGE_NAME
-
 
 before_script:
   - echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc
@@ -146,23 +68,26 @@ check_port_prod:
 deploy_to_prod:
   stage: deploy_prod
   script:
-    - echo "Deploying to prod server"
-  # only:
-  #   - main
+    - echo "Deploying to prod server with PM2"
   tags:
     - oee_apps_prod
   needs:
     - build_prod
     - check_port_prod
-  # when: manual
   script:
-    - docker image ls
-    - |
-      CONTAINER_ID=$(docker ps -aqf "name=$CONTAINER_NAME")
-      if [ -n "$CONTAINER_ID" ]; then
-        echo "Container is already running. Stopping and removing it..."
-        docker stop $CONTAINER_ID
-        docker rm $CONTAINER_ID  # Remove the old container
-      fi
-    - docker build --no-cache -t $IMAGE_NAME .
-    - docker run --restart always -d -p $HOST_PORT:$INSIDE_PORT --name $CONTAINER_NAME --env-file $ENV_FILE $IMAGE_NAME
+    - echo "Stopping PM2 process if it exists"
+    - pm2 delete oee_app || echo "No PM2 process to stop"
+
+    # Copy dist folder to the production server if needed (e.g., SCP or rsync)
+    - echo "Copying dist folder to server (optional, depending on your setup)"
+    - scp -r dist/* ubuntu@ip-172-31-33-57:/home/ubuntu/oee_app
+
+    # Start the app using PM2
+    - echo "Starting Vue app with PM2"
+    - pm2 start /home/ubuntu/oee_app --name "oee_app" -- -p 8080 -c-1 ./dist
+
+    # Optionally save the PM2 process list to auto-start on boot
+    - pm2 save
+  # only:
+  #   - main  # Deploy only from the 'main' branch (you can modify this based on your needs)
+  when: manual  # Make it manual if you want to control when deployments happen
