@@ -68,3 +68,24 @@ export async function updateFriendlyMachineName (data) {
   }
   return []
 }
+
+export async function updateProductionSettings (data) {
+  const checkAuthValid = await checkAuth()
+  if (checkAuthValid) {
+    try {
+      const myurl = `${process.env.VUE_APP_URL_BACKEND}`
+      const myExactPath = `${myurl}/api/machine_status/update-production-settings`
+      const response = await axios.post(myExactPath, data, {
+        headers: {
+          Authorization: checkAuthValid
+        }
+      })
+      return response.data // You can return the response data for further use
+    } catch (error) {
+      // alert('ไม่พบข้อมูล')
+      return null
+      // throw error; // Rethrow the error for the caller to handle
+    }
+  }
+  return []
+}

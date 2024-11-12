@@ -22,6 +22,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "home" */ '@/views/web_base/OverviewPage.vue')
   },
   {
+    path: '/historical-data',
+    name: 'HistoricalChart',
+    component: () => import(/* webpackChunkName: "historical" */ '@/views/web_base/HistoricalChart.vue')
+  },
+  {
     path: '/settings',
     children: [
       {
