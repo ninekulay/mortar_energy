@@ -1,35 +1,37 @@
-image: node:18  # Use a Node.js Docker image for the CI/CD pipeline
+image: node:18
 
 stages:
   - build_prod
   - deploy_prod
 
 variables:
-  ENV_FILE: .env.production  # Define the environment file
-  VUE_APP_PATH: /home/ubuntu/oee_app  # Define your Vue.js app's path on the server
+  VUE_APP_PATH: "/home/ubuntu/my-oee-app"  # Adjust the path based on your server's file structure
 
 before_script:
-  - echo "Installing NVM"
-  - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash  # Install NVM
-  - source ~/.nvm/nvm.sh
-  - nvm install 18.17.1
-  - nvm use 18.17.1
-  - node --version
-  - npm --version
+  - nvm use 18.17.1  # Use Node version 18
+  - node --version  # Verify node version
+  - npm --version  # Verify npm version
 
 build_prod:
   stage: build_prod
   script:
-    - npm install  # Install dependencies
-    - npm run build  # Build the production app
+    - echo "Building production Vue.js app"
+    - cd $VUE_APP_PATH  # Go to the Vue app directory
+    - npm install --force  # Install dependencies
+    - npm run build  # Build production files (dist/)
+  artifacts:
+    paths:
+      - dist/  # Save the build artifacts for deployment
 
 deploy_prod:
   stage: deploy_prod
   script:
-    - echo "Deploying Vue.js app to the server"
-    - cd $VUE_APP_PATH  # Navigate to your app directory
-    - git pull origin main  # Optional: Update app from Git (if using Git for deployment)
+    - echo "Deploying Vue.js app to production server"
+    - cd $VUE_APP_PATH  # Go to the Vue app directory on the server
+    - git pull origin main  # Optionally pull the latest code from Git
     - npm install --production  # Install production dependencies
-    - pm2 stop oee-app || true  # Stop the app if it's running
-    - pm2 start npm --name "oee-app" -- run start  # Start the app using PM2
+    - pm2 stop oee-app || true  # Stop PM2 app if already running (does not fail if app is not running)
+    - pm2 delete oee-app || true  # Delete any existing PM2 app with the name 'oee-app'
+    - npx http-server ./dist -p 8080  # Serve the static files in 'dist' directory on port 8080
+    - pm2 start "npx http-server ./dist -p 8080" --name "oee-app"  # Start the server using PM2
     - pm2 save  # Save PM2 process list for automatic startup
