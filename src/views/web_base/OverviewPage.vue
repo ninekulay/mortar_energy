@@ -591,6 +591,8 @@ export default {
       this.dataSource.friendlyMachineName = data.friendly_machine_name
       this.dataSource.standardData.productionSetting.sku = data.production_setting.product_id
       this.dataSource.standardData.productionSetting.target = data.production_setting.production_target
+      this.dataSource.standardData.productionSetting.standardTime = data.production_setting.standard_time
+      this.dataSource.standardData.productionSetting.pcsPerLot = data.production_setting.pcs_per_lot
       this.dataSource.countItem = data.operate_data.count_item
       let progessCount = (data.operate_data.count_item / data.production_setting.production_target) * 100
       progessCount = parseFloat(progessCount) > 100 ? 100 : progessCount
