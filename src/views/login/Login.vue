@@ -1,7 +1,10 @@
 <template>
     <div class="flex justify-center items-center h-full w-full min-h-screen main-div absolute">
-        <div class="flex flex-col h-96 w-96 rounded-xl border shadow-xl backdrop-blur-xl bg-white/70">
-            <h2 class="w-full text-center py-2 px-8 font-semibold text-xl cursor-default">Machine Performance System</h2>
+        <div class="flex flex-col w-96 rounded-xl border shadow-xl backdrop-blur-xl bg-white/30" style="height: 420px;">
+            <div class="w-full flex justify-center">
+                <img :src="logoScg" class="w-24 mx-auto mt-4">
+            </div>
+            <h2 class="w-full text-center py-2 px-8 font-semibold text-xl cursor-default">Energy Monitoring System</h2>
             <div class="flex w-full justify-start px-4 gap-4">
                 <h2 for="email" class="text-left p-2 w-1/3 font-semibold cursor-default">Email</h2>
             </div>
@@ -15,7 +18,7 @@
                 <input v-model="dataSource.password" type="password" placeholder="Password" class="w-full p-2 border border-sky-300 rounded-lg" />
             </div>
             <div class="flex w-full justify-center items-center mt-8">
-                <button @click="login" class="w-2/3 p-2 bg-sky-500 text-white rounded-lg font-semibold shadow-lg hover:bg-sky-600">Login</button>
+                <button class="w-2/3 p-2 bg-sky-500 text-white rounded-lg font-semibold shadow-lg hover:bg-sky-600">Login</button>
             </div>
             <div class="flex w-full mt-4">
                 <p class="text-black text-left text-sm px-4 cursor-default">Please login with your email and password or contract to <a class="cursor-pointer" style="color: blue">www.qonnect.ai</a></p>
@@ -27,6 +30,25 @@
                 </div>
             </div>
         </div>
+        <TransitionRoot :show="modal.animate">
+            <Dialog class="relative z-10" @close="modal.animate = false">
+            <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            </TransitionChild>
+
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                    <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                    <div>
+                        <img :src="modal.file" class="h-32 mx-auto">
+                    </div>
+                    </DialogPanel>
+                </TransitionChild>
+                </div>
+            </div>
+            </Dialog>
+        </TransitionRoot>
         <TransitionRoot :show="modal.open">
             <Dialog class="relative z-10" @close="modal.open = false">
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
@@ -57,10 +79,11 @@
     </div>
 </template>
 <script>
-import { logoQonnectBlackFull, logoQonnectWhiteFull, logoQonnectWhiteFullSvg } from '@/assets/helper/assets'
+import { logoQonnectBlackFull, logoQonnectWhiteFull, logoQonnectWhiteFullSvg, logoScg } from '@/assets/helper/assets'
 import { ref } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+// eslint-disable-next-line no-unused-vars
 import { userLogin, saveUserAuth } from '@/store/userManagement'
 
 export default {
@@ -77,7 +100,9 @@ export default {
         const modal = ref({
             open: false,
             header: 'Login Failed',
-            message: 'Please check your email and password'
+            message: 'Please check your email and password',
+            animate: false,
+            file: ref(null)
         })
         const dataSource = ref({
             email: '',
@@ -88,30 +113,38 @@ export default {
             logoQonnectWhiteFull,
             logoQonnectWhiteFullSvg,
             modal,
-            dataSource
+            dataSource,
+            logoScg,
         }
     },
     methods: {
         async login() {
-        //    this.modal.open = !this.modal.open
-            const sendParams = {
-                email: this.dataSource.email,
-                password: this.dataSource.password
-            }
-            const result = await userLogin(sendParams)
-            if (result.message.toLowerCase() === 'ok') {
-                saveUserAuth(result.token)
-                this.$router.push({ name: 'home' })
-            } else {
-                this.modal.open = !this.modal.open
-            }
+            this.modal.animate = !this.modal.animate
+            setInterval(() => {
+                this.randomAnimate()
+            }, 5000);
+        // //    this.modal.open = !this.modal.open
+        //     const sendParams = {
+        //         email: this.dataSource.email,
+        //         password: this.dataSource.password
+        //     }
+        //     const result = await userLogin(sendParams)
+        //     if (result.message.toLowerCase() === 'ok') {
+        //         saveUserAuth(result.token)
+        //         this.$router.push({ name: 'home' })
+        //     } else {
+        //         this.modal.open = !this.modal.open
+        //     }
+        },
+        randomAnimate() {
+            this.modal.file = this.modal.file === null ? this.elephantMove : this.modal.file === this.elephantMove ? this.elephantMove2 : this.elephantMove
         }
     }
 }
 </script>
 <style>
 .main-div {
-    background: url('@/assets/image/background/login-background.jpg') no-repeat center center fixed;
+    background: url('@/assets/image/background/clean-energy-concept.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 </style>

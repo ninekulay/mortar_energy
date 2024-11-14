@@ -8,9 +8,12 @@ import DChartCircleGauge from '@/components/chart/circleGauge.vue'
 import DChartBarLine from '@/components/chart/barWithLine.vue'
 import DChartBarCurve from '@/components/chart/barGaugeCurve.vue'
 import DChartTimeline from '@/components/chart/timelineChart.vue'
+import DChartAreaSpline from '@/components/chart/AreaSpline.vue'
+import DisplayBox from '@/components/box/DisplayBox.vue'
 
 export {
   DChartGauge, DChartColumn, DChartLine, DChartDonut, DChartCircleGauge,
   DChartBarBasic, DChartStackBar, DChartBarLine,
-  DChartBarCurve, DChartTimeline
+  DChartBarCurve, DChartTimeline, DChartAreaSpline,
+  DisplayBox
 }

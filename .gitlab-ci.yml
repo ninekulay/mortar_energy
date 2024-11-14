@@ -12,17 +12,17 @@ stages:
   - deploy_prod
 
 variables:
-  IMAGE_NAME: my-oee-app
-  CONTAINER_NAME: my-oee-app
-  HOST_PORT: 8080
-  INSIDE_PORT : 8080
+  IMAGE_NAME: my-energy-app
+  CONTAINER_NAME: my-energy-app
+  HOST_PORT: 7070
+  INSIDE_PORT : 7070
   ENV_FILE: .env.production  # Define the environment file
 
 build_dev:
   stage: build_dev
   image: node:18
   tags:
-    - oee_apps_dev
+    - energy_apps_dev
   when: manual
   script:
     - echo "VUE_APP_URL_BACKEND=$CI_VUE_APP_URL_BACKEND" >> $ENV_FILE
@@ -41,12 +41,12 @@ build_dev:
 check_port_dev:
   stage: check_port_dev
   tags:
-    - oee_apps_dev
+    - energy_apps_dev
   needs:
     - build_dev
   script:
     - |
-      PORT=8080
+      PORT=7070
       CONTAINER_ID=$(docker ps -qf "expose=$PORT")
       if [ -n "$CONTAINER_ID" ]; then
         echo "Container is already running on port $PORT. Stopping and removing it..."
@@ -76,7 +76,7 @@ deploy_to_dev:
   only:
     - backend-dev
   tags:
-    - oee_apps_dev
+    - energy_apps_dev
   needs:
     - build_dev
   when: manual
@@ -110,7 +110,7 @@ build_prod:
   stage: build_prod
   image: node:18
   tags:
-    - oee_apps_prod
+    - energy_apps_prod
   when: manual
   script:
     - echo "VUE_APP_URL_BACKEND=$CI_VUE_APP_URL_BACKEND" >> $ENV_FILE
@@ -128,12 +128,12 @@ build_prod:
 check_port_prod:
   stage: check_port_prod
   tags:
-    - oee_apps_prod
+    - energy_apps_prod
   needs:
     - build_prod
   script:
     - |
-      PORT=8080
+      PORT=7070
       CONTAINER_ID=$(docker ps -qf "expose=$PORT")
       if [ -n "$CONTAINER_ID" ]; then
         echo "Container is already running on port $PORT. Stopping and removing it..."
@@ -150,7 +150,7 @@ deploy_to_prod:
   # only:
   #   - main
   tags:
-    - oee_apps_prod
+    - energy_apps_prod
   needs:
     - build_prod
     - check_port_prod

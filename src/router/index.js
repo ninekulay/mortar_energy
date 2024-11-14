@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import HomeView from '../views/HomeView.vue'
+// eslint-disable-next-line no-unused-vars
 import { getUserAuth } from '@/store/userManagement'
 
 const routes = [
@@ -22,9 +23,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "home" */ '@/views/web_base/OverviewPage.vue')
   },
   {
-    path: '/historical-data',
-    name: 'HistoricalChart',
-    component: () => import(/* webpackChunkName: "historical" */ '@/views/web_base/HistoricalChart.vue')
+    path: '/monitor-data',
+    name: 'MonitoringPage',
+    component: () => import(/* webpackChunkName: "historical" */ '@/views/web_base/MonitoringPage.vue')
+  },
+  {
+    path: '/export-data',
+    name: 'ExportDataPage',
+    component: () => import(/* webpackChunkName: "historical" */ '@/views/web_base/ExportDataPage.vue')
   },
   {
     path: '/settings',
@@ -62,26 +68,26 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
-router.beforeEach((to, from, next) => {
-  const userAuth = getUserAuth()
+// router.beforeEach((to, from, next) => {
+//   const userAuth = getUserAuth()
 
-  const currentPath = to.path
-  if (userAuth === null || userAuth === undefined) {
-    if (currentPath !== '/login') {
-      next({ name: 'LoginPage' })
-    }
-  } else {
-    next()
-    // if (to.path.startsWith('/setting') || to.path.startsWith('/overview')) {
+//   const currentPath = to.path
+//   if (userAuth === null || userAuth === undefined) {
+//     if (currentPath !== '/login') {
+//       next({ name: 'LoginPage' })
+//     }
+//   } else {
+//     next()
+//     // if (to.path.startsWith('/setting') || to.path.startsWith('/overview')) {
 
-    // } else {
-    //   next()
-    // }
-  }
-  if (to.matched.length === 0) {
-    window.location.href = '/error/handle-403'
-  } else {
-    next() // Continue with the navigation
-  }
-})
+//     // } else {
+//     //   next()
+//     // }
+//   }
+//   if (to.matched.length === 0) {
+//     window.location.href = '/error/handle-403'
+//   } else {
+//     next() // Continue with the navigation
+//   }
+// })
 export default router

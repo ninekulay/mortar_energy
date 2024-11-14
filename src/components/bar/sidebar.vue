@@ -1,5 +1,5 @@
 <script>
-import { logoQonnectWhite, logoQonnectWhiteFull, logoQonnectWhiteFullSvg, logoQonnectBlack, logoAjinomoto } from '@/assets/helper/assets'
+import { logoQonnectWhite, logoQonnectWhiteFull, logoQonnectWhiteFullSvg, logoQonnectBlack, logoScg } from '@/assets/helper/assets'
 import { reactive, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { routeTo } from '@/utils/helper'
@@ -71,16 +71,16 @@ export default {
     const route = useRoute()
     const menu = reactive([
       { title: 'Overview', label: 'Overview', link: 'home', icon: 'pieIcon', iconActive: 'pieIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'History', label: 'History', link: 'HistoricalChart', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      // { title: 'Plan', label: 'Plan', link: 'UploadPlan', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Monitor', label: 'Monitor', link: 'MonitoringPage', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Export', label: 'Export', link: 'ExportDataPage', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
       // { title: 'Reject', label: 'Reject', link: 'RejectLogs', icon: 'documentMinusIcon', iconActive: 'documentMinusIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
       { title: 'Settings', label: 'Settings', link: 'UserSetting', icon: 'toolsIconWhite', iconActive: 'toolsIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
 
     ])
     const menuMinimize = reactive([
       { title: 'Overview', label: 'Machine Overview', link: 'home', icon: 'pieIcon', iconActive: 'pieIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      { title: 'History', label: 'History', link: 'HistoricalChart', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
-      // { title: 'Plan', label: 'Plan', link: 'UploadPlan', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Monitor', label: 'Monitor', link: 'MonitoringPage', icon: 'clipboardDataIconWhite', iconActive: 'clipboardDataIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
+      { title: 'Export', label: 'Export', link: 'ExportDataPage', icon: 'documentUpIcon', iconActive: 'documentUpIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
       // { title: 'Reject', label: 'Reject', link: 'RejectLogs', icon: 'documentMinusIcon', iconActive: 'documentMinusIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
       { title: 'Settings', label: 'Settings', link: 'UserSetting', icon: 'toolsIconWhite', iconActive: 'toolsIconBlue', iconType: 'hero-icons', active: false, hover: false, fill: 'white' },
     ])
@@ -143,7 +143,7 @@ export default {
       logoQonnectBlack,
       logoQonnectWhiteFull,
       logoQonnectWhiteFullSvg,
-      logoAjinomoto,
+      logoScg,
       onCollapsed,
       handleTvMode,
       onItem,
@@ -208,8 +208,8 @@ export default {
   <section>
     <div class="bg-white h-11 absolute top-0 right-0 flex justify-between align-middle items-center shadow-sm z-0 w-full" :style="{ width: `calc(100vw - ${width}px)`}">
       <div class="flex w-1/2 justify-start gap-4 items-center" v-if="isCollapsed">
-        <img class="h-8 ml-8" :src="logoAjinomoto"/>
-        <h2 class="font-semibold">Machine Performance</h2>
+        <img class="h-8 ml-8" :src="logoScg"/>
+        <h2 class="font-semibold">Energy Monitoring</h2>
       </div>
       <div :class="`flex justify-end align-middle items-center ${classBindingCollapsed}`">
         <button v-if="isTelevision" class="flex justify-between align-middle items-center text-sky-500 mx-8 text-sm border border-gray-300 rounded-lg px-2 py-1 font-semibold max-lg:hidden" @click="handleTvMode">
@@ -259,8 +259,8 @@ export default {
     </section>
 
     <section :class="`q-sidebar-menu ${isCollapsed ? 'mt-8' : ''}`">
-      <img alt="logo" class="logo ml-5 h-12" :src="logoAjinomoto" v-show="!isCollapsed" style="filter: invert(100%) sepia(100%) brightness(200%);"/>
-      <h1 class="text-left text-white font-semibold ml-5 mt-4 text-xl" v-show="!isCollapsed">Machine Performance</h1>
+      <img alt="logo" class="logo ml-5 h-12" :src="logoScg" v-show="!isCollapsed" style="filter: invert(100%) sepia(100%) brightness(200%);"/>
+      <h1 class="text-left text-white font-semibold ml-5 mt-4 text-xl" v-show="!isCollapsed">Energy Monitoring</h1>
       <ul class="mt-5 font-semibold" v-show="!isCollapsed">
         <li v-for="(item, index) in filteredMenuNonTablet" :key="index"
             :class="[
