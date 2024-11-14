@@ -48,9 +48,9 @@ export default {
       },
 
       legend: {
-        layout: 'horizontal',
-        align: 'center',
-        verticalAlign: 'bottom',
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'top',
         enabled: true,
         // align: 'bottom',
         // // x: 80,
@@ -72,7 +72,7 @@ export default {
         color: '#08638C'
       }, {
         name: props.dataSource.data.seriesB.name,
-        type: 'line',
+        type: 'spline',
         data: props.dataSource.data.seriesB.data,
         color: '#6EC9F2',
         dataLabels: {
